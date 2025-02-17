@@ -1,0 +1,35 @@
+-- basic settings
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.autoindent = true
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+
+-- Plugin manager
+require('packer').startup(function(use)
+    use 'wbthomason/packer.nvim'
+    use 'github/copilot.vim'
+    
+    -- Theme
+    use 'projekt0n/github-nvim-theme'
+    
+    -- LSP Support
+    use 'neovim/nvim-lspconfig'
+    use 'williamboman/mason.nvim'
+    use 'williamboman/mason-lspconfig.nvim'
+    
+    -- Autocompletion
+    use 'hrsh7th/nvim-cmp'
+    use 'hrsh7th/cmp-nvim-lsp'
+    
+    -- Syntax highlighting
+    use {
+        'nvim-treesitter/nvim-treesitter',
+        run = function() vim.cmd('TSUpdate') end
+    }
+end)
+
+-- Copilot settings
+vim.g.copilot_no_tab_map = false
+vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
