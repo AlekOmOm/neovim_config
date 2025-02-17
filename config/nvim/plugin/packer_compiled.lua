@@ -105,6 +105,11 @@ _G.packer_plugins = {
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\inc-rename.nvim",
     url = "https://github.com/smjonas/inc-rename.nvim"
   },
+  ["markdown-preview.nvim"] = {
+    loaded = true,
+    path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\markdown-preview.nvim",
+    url = "https://github.com/iamcco/markdown-preview.nvim"
+  },
   ["mason-lspconfig.nvim"] = {
     loaded = true,
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\mason-lspconfig.nvim",
@@ -144,6 +149,16 @@ _G.packer_plugins = {
     loaded = true,
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\refactoring.nvim",
     url = "https://github.com/ThePrimeagen/refactoring.nvim"
+  },
+  ["telescope-fzf-native.nvim"] = {
+    loaded = true,
+    path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\telescope-fzf-native.nvim",
+    url = "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
+  },
+  ["telescope.nvim"] = {
+    loaded = true,
+    path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\telescope.nvim",
+    url = "https://github.com/nvim-telescope/telescope.nvim"
   }
 }
 

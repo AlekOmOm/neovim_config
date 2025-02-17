@@ -68,6 +68,23 @@ require('packer').startup(function(use)
     -- plenary 
     use 'nvim-lua/plenary.nvim'  -- required by many plugins
 
+
+    -- markdown preview
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    })
+
+    -- telescope
+    use {
+        'nvim-telescope/telescope.nvim',
+        requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    use {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        run = 'make'
+    }
+
     -- refactoring
     use {
         'ThePrimeagen/refactoring.nvim',
