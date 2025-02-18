@@ -14,7 +14,6 @@ end
 
 local packer_bootstrap = ensure_packer()
 
--- Load plugin configs first
 require('plugins.copilot')
 require('plugins.lsp')
 require('plugins.completion')
@@ -22,25 +21,24 @@ require('plugins.telescope')
 require('plugins.treesitter')
 require('plugins.theme')
 
--- Then return packer config
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
     use 'github/copilot.vim'
-    
+
     -- LSP Support
     use 'neovim/nvim-lspconfig'
     use 'williamboman/mason.nvim'
     use 'williamboman/mason-lspconfig.nvim'
-    
+
     -- Completion
     use 'hrsh7th/nvim-cmp'
     use 'hrsh7th/cmp-nvim-lsp'
     use 'L3MON4D3/LuaSnip'
     use 'saadparwaiz1/cmp_luasnip'
-    
+
     -- Theme
     use 'projekt0n/github-nvim-theme'
-   
+
 
     -- Telescope
     use {
@@ -58,7 +56,7 @@ return require('packer').startup(function(use)
         'nvim-treesitter/nvim-treesitter',
         run = function() vim.cmd('TSUpdate') end
     }
-    
+
     -- Refactoring
     use {
         'ThePrimeagen/refactoring.nvim',
@@ -67,13 +65,25 @@ return require('packer').startup(function(use)
             {'nvim-treesitter/nvim-treesitter'}
         }
     }
+
+    -- Incremental renaming
+    -- - incremental = ir, all = ar, current = created
+    -- -- ir -> rename current word under cursor, 
+    -- -- ar -> rename all instances of current word, 
+    -- -- cr -> rename current word under cursor
     use {
         'smjonas/inc-rename.nvim',
         config = function()
-            require('inc_rename').setup()
+            require('inc_rename').setup( {
+                keymaps = {
+                    "i",
+                    "n",
+                    "x",
+                }, -- use case: <leader>ir, <leader>ar, <leader>cr for incremental renaming
+            })
         end
     }
-    
+
     -- Git
     -- - git commands in nvim, i.e. :Gstatus, :Gcommit, etc. 
 
@@ -82,9 +92,13 @@ return require('packer').startup(function(use)
     -- markdown preview
     use({
         "iamcco/markdown-preview.nvim",
-        run = function() vim.fn["mkdp#util#install"]() end,
+        run = "cd app && yarn install",
+        setup = function() 
+            vim.g.mkdp_filetypes = { "markdown" }
+        end,
+        ft = { "markdown" },
     })
-    
+
     if packer_bootstrap then
         require('packer').sync()
     end
