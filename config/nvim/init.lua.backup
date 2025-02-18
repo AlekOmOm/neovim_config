@@ -1,3 +1,19 @@
+-- OneDrive/../init.lua
+-- packer bootstrap setup
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 
+      'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
 -- basic settings
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -5,31 +21,208 @@ vim.opt.autoindent = true
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
+vim.opt.smarttab = true
+vim.opt.smartindent = true
 
--- Plugin manager
+-- leader key
+vim.g.mapleader = ' '
+
+-- plugin manager
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
     use 'github/copilot.vim'
     
-    -- Theme
+    -- theme
     use 'projekt0n/github-nvim-theme'
     
     -- LSP Support
     use 'neovim/nvim-lspconfig'
     use 'williamboman/mason.nvim'
-    use 'williamboman/mason-lspconfig.nvim'
-    
-    -- Autocompletion
+    use { 'williamboman/mason-lspconfig.nvim', requires = 'williamboman/mason.nvim' }
+
+    -- completion
     use 'hrsh7th/nvim-cmp'
     use 'hrsh7th/cmp-nvim-lsp'
+    use 'L3MON4D3/LuaSnip'
+    use 'saadparwaiz1/cmp_luasnip'    
     
-    -- Syntax highlighting
+    -- syntax highlighting
     use {
         'nvim-treesitter/nvim-treesitter',
         run = function() vim.cmd('TSUpdate') end
     }
+
+    -- plenary 
+    use 'nvim-lua/plenary.nvim'
+
+    -- markdown preview
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    })
+
+    -- telescope
+    use {
+        'nvim-telescope/telescope.nvim',
+        requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    use {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        run = 'make'
+    }
+
+    -- refactoring
+    use {
+        'ThePrimeagen/refactoring.nvim',
+        requires = {
+            {'nvim-lua/plenary.nvim'},
+            {'nvim-treesitter/nvim-treesitter'}
+        }
+    }
+    use {
+        'smjonas/inc-rename.nvim',
+        config = function()
+            require('inc_rename').setup()
+        end
+    }
+
+    if packer_bootstrap then
+        require('packer').sync()
+    end
 end)
+
+-- Setup Mason first
+require("mason").setup({
+    ensure_installed = {
+        "actionlint",
+        "prettier",
+        "markdownlint",
+        "markdown-toc"
+    }
+})
+
+-- Setup mason-lspconfig
+require('mason-lspconfig').setup({
+    ensure_installed = { 
+        "pyright",
+        "dockerls",
+        "docker_compose_language_service",
+        "rust_analyzer",
+        "bashls",
+        "yamlls"
+    }
+})
+
+-- Setup completion
+local cmp = require('cmp')
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            require('luasnip').lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    }),
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+    })
+})
+
+-- Setup LSP capabilities
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+-- Setup Telescope
+require('telescope').setup()
+require('telescope').load_extension('fzf')
+
+-- Setup TreeSitter
+require('nvim-treesitter.configs').setup({
+    ensure_installed = 'maintained',
+    highlight = {
+        enable = true
+    }
+})
+
+-- Setup Refactoring
+require('refactoring').setup()
+
+-- LSP Configurations
+local servers = {
+    'pyright',
+    'dockerls',
+    'docker_compose_language_service',
+    'rust_analyzer',
+    'bashls',
+    'yamlls'
+}
+
+-- Configure all LSP servers
+for _, lsp in ipairs(servers) do
+    local config = {
+        capabilities = capabilities
+    }
+    
+    -- Add server-specific settings
+    if lsp == 'rust_analyzer' then
+        config.settings = {
+            ['rust-analyzer'] = {
+                checkOnSave = {
+                    command = "clippy"
+                }
+            }
+        }
+    end
+    
+    require('lspconfig')[lsp].setup(config)
+end
+
+-- Markdown preview settings
+vim.g.mkdp_auto_start = 1
+vim.g.mkdp_auto_close = 1
+vim.g.mkdp_refresh_slow = 1
+vim.g.mkdp_browser = 'brave'
+
+-- Theme settings
+vim.cmd('colorscheme github_dark')
+vim.cmd('highlight Normal guibg=black')
 
 -- Copilot settings
 vim.g.copilot_no_tab_map = false
 vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+
+-- Keymaps
+-- Telescope
+vim.api.nvim_set_keymap('n', '<leader>ff', ':Telescope find_files<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>fg', ':Telescope git_files<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>fb', ':Telescope buffers<CR>', { noremap = true, silent = true })
+
+-- Refactoring
+vim.keymap.set("n", "<leader>rn", ":IncRename ")
+vim.keymap.set("v", "<leader>re", ":Refactor extract ")
+vim.keymap.set("v", "<leader>rf", ":Refactor extract_to_file ")
+
+-- Autocommand for running files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {'python', 'java', 'cs', 'lua', 'javascript', 'typescript', 'rust'},
+  callback = function()
+    local filetype = vim.bo.filetype
+    local cmd = {
+      python = ':!python %',
+      java = ':!javac % && java %:r',
+      cs = ':!dotnet run %',
+      lua = ':!lua %',
+      javascript = ':!node %',
+      typescript = ':!ts-node %',
+      rust = ':!cargo run'
+    }
+    
+    if cmd[filetype] then
+      vim.keymap.set('n', '<F5>', cmd[filetype] .. '<CR>', { buffer = true })
+    end
+  end
+})

@@ -24,6 +24,8 @@ vim.opt.shiftwidth = 4
 
 vim.g.mapleader = ' '
 
+-- theme with github_dark but customized with black background
+
 vim.cmd('colorscheme github_dark') -- github_dark theme
 vim.cmd('highlight Normal guibg=black') -- black background
 
@@ -31,13 +33,6 @@ vim.cmd('highlight Normal guibg=black') -- black background
 -- - local capabilities set here before requiring cmp_nvim_lsp
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('lspconfig').bashls.setup({
-    capabilities = capabilities
-})
-
-require('lspconfig').yamlls.setup({
-    capabilities = capabilities
-})
 
 -- plugin manager
 require('packer').startup(function(use)
@@ -68,22 +63,10 @@ require('packer').startup(function(use)
     -- plenary 
     use 'nvim-lua/plenary.nvim'  -- required by many plugins
 
-
     -- markdown preview
-    use({
-        "iamcco/markdown-preview.nvim",
-        run = function() vim.fn["mkdp#util#install"]() end,
-    })
+    use 'iamcco/markdown-preview.nvim'
 
-    -- telescope
-    use {
-        'nvim-telescope/telescope.nvim',
-        requires = { {'nvim-lua/plenary.nvim'} }
-    }
-    use {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        run = 'make'
-    }
+
 
     -- refactoring
     use {
@@ -101,23 +84,14 @@ require('packer').startup(function(use)
     }
 end)
 
-require("mason").setup({
-    ensure_installed = {
-        "actionlint",
-        "prettier",
-        "markdownlint",
-        "markdown-toc"
-    }
-})
 
+require('mason').setup()
 require('mason-lspconfig').setup({
     ensure_installed = { 
         "pyright",
         "dockerls",
         "docker_compose_language_service",
-        "rust_analyzer",
-        "bashls",
-        "yamlls"
+        "rust_analyzer"
     }
 })
 
