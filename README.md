@@ -1,12 +1,29 @@
 # Neovim Configuration documentation
 
-personal neovim config
+Personal neovim config
 
-peculiarities:
+## Requirements
+**Important:** This configuration requires Neovim >= 0.9.0. If you're on Debian stable, you'll need to install Neovim from source as the default repositories have older versions:
+
+```bash
+# Install build dependencies
+sudo apt-get install ninja-build gettext cmake unzip curl
+
+# Build from source
+cd ~
+mkdir neovim-source && cd neovim-source
+git clone https://github.com/neovim/neovim
+cd neovim
+git checkout stable
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+sudo make install
+```
+
+## Peculiarities
 - OneDrive sync to AppData/Local/nvim
     - `init.vim` is symlinked to `init.lua` for easier configuration
 
-## Directory Structure:
+## Directory Structure
 ```
 ~/.config/nvim/
 ├── init.lua
@@ -28,8 +45,7 @@ peculiarities:
     └── utils/  (not yet implemented)
 ```
 
-
-## complete list of both plugins and core configurations:
+## Complete list of both plugins and core configurations
 
 1. Core Settings:
    - Line numbers: relative + absolute
@@ -78,4 +94,3 @@ peculiarities:
      - Space+rn: rename
      - Space+re: extract code
      - Space+rf: extract to file
-
