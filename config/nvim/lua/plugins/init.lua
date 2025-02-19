@@ -13,7 +13,6 @@ return require('packer').startup(function(use)
     use 'neovim/nvim-lspconfig'
     use 'williamboman/mason.nvim'
     use 'williamboman/mason-lspconfig.nvim'
-    use 'hrsh7th/cmp-nvim-lsp'  -- Make sure this is installed before LSP config
 
     -- Completion
     use {
