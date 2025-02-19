@@ -1,25 +1,9 @@
--- # ~/.config/nvim/lua/plugins/init.lua
+-- ~/.config/nvim/lua/plugins/init.lua
 
-local ensure_packer = function()
-    local fn = vim.fn
-    local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-    if fn.empty(fn.glob(install_path)) > 0 then
-        fn.system({'git', 'clone', '--depth', '1', 
-            'https://github.com/wbthomason/packer.nvim', install_path})
-        vim.cmd [[packadd packer.nvim]]
-        return true
-    end
-    return false
+local status_ok, packer = pcall(require, "packer")
+if not status_ok then
+    return
 end
-
-local packer_bootstrap = ensure_packer()
-
-require('plugins.copilot')
-require('plugins.lsp')
-require('plugins.completion')
-require('plugins.telescope')
-require('plugins.treesitter')
-require('plugins.theme')
 
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
@@ -29,16 +13,60 @@ return require('packer').startup(function(use)
     use 'neovim/nvim-lspconfig'
     use 'williamboman/mason.nvim'
     use 'williamboman/mason-lspconfig.nvim'
+    use 'hrsh7th/cmp-nvim-lsp'  -- Make sure this is installed before LSP config
 
     -- Completion
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'L3MON4D3/LuaSnip'
-    use 'saadparwaiz1/cmp_luasnip'
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+            'L3MON4D3/LuaSnip',
+            'saadparwaiz1/cmp_luasnip',
+        }
+    }
+
+    -- Completion
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+            'L3MON4D3/LuaSnip',
+            'saadparwaiz1/cmp_luasnip',
+        },
+        config = function()
+            local cmp = require('cmp')
+            local luasnip = require('luasnip')
+
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        luasnip.lsp_expand(args.body)
+                    end,
+                },
+                mapping = cmp.mapping.preset.insert({
+                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                    ['<C-Space>'] = cmp.mapping.complete(),
+                    ['<C-e>'] = cmp.mapping.abort(),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                }),
+                sources = cmp.config.sources({
+                    { name = 'nvim_lsp' },
+                    { name = 'luasnip' },
+                    { name = 'buffer' },
+                    { name = 'path' },
+                })
+            })
+        end,
+    }
 
     -- Theme
     use 'projekt0n/github-nvim-theme'
-
 
     -- Telescope
     use {
@@ -47,10 +75,11 @@ return require('packer').startup(function(use)
             {'nvim-lua/plenary.nvim'},
             {
                 'nvim-telescope/telescope-fzf-native.nvim',
-                run = 'make',  -- This requires make to be installed, see :help telescope-fzf-native
+                run = 'make'
             }
         }
     }
+    
     -- Treesitter
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -67,33 +96,31 @@ return require('packer').startup(function(use)
     }
 
     -- Incremental renaming
-    -- - incremental = ir, all = ar, current = created
-    -- -- ir -> rename current word under cursor, 
-    -- -- ar -> rename all instances of current word, 
-    -- -- cr -> rename current word under cursor
     use {
         'smjonas/inc-rename.nvim',
         config = function()
-            require('inc_rename').setup( {
+            local status_ok, inc_rename = pcall(require, "inc_rename")
+            if not status_ok then
+                return
+            end
+            inc_rename.setup({
                 keymaps = {
                     "i",
                     "n",
                     "x",
-                }, -- use case: <leader>ir, <leader>ar, <leader>cr for incremental renaming
+                }
             })
         end
     }
 
     -- Git
-    -- - git commands in nvim, i.e. :Gstatus, :Gcommit, etc. 
-
-    use 'tpope/vim-fugitive' 
+    use 'tpope/vim-fugitive'
 
     -- markdown preview
     use({
         "iamcco/markdown-preview.nvim",
         run = "cd app && yarn install",
-        setup = function() 
+        setup = function()
             vim.g.mkdp_filetypes = { "markdown" }
         end,
         ft = { "markdown" },
@@ -101,5 +128,15 @@ return require('packer').startup(function(use)
 
     if packer_bootstrap then
         require('packer').sync()
+    else
+        -- Only load plugin configs after plugins are installed
+        vim.cmd([[
+            augroup packer_load_config
+            autocmd!
+            autocmd User PackerComplete ++once lua require('plugins.setup')
+            augroup end
+        ]])
     end
 end)
+
+
