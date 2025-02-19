@@ -1,0 +1,12 @@
+/config/nvim/
+/data/
+*.backup
+*-DESKTOP-*.lua
+
+packer_compiled.lua
+.DS_Store
+**/plugin/packer_compiled.lua
+
+nvim-linux-x86_64.appimage
+nvim-linux-x86_64.appimage.1
+squashfs-root/
