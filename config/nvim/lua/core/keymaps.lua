@@ -13,3 +13,8 @@ vim.keymap.set("n", "<leader>rn", ":IncRename ")
 vim.keymap.set("v", "<leader>re", ":Refactor extract ")
 vim.keymap.set("v", "<leader>rf", ":Refactor extract_to_file ")
 
+-- markdown keymaps
+
+local opts = { noremap = true, silent = true }
+vim.api.nvim_set_keymap('n', '<leader>mp', ':MarkdownPreview<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>ms', ':MarkdownCompile<CR>', opts)

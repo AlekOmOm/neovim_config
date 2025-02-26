@@ -103,16 +103,17 @@ return require('packer').startup(function(use)
     -- Git
     use 'tpope/vim-fugitive'
 
-    -- markdown preview
+    -- markdown-preview
     use({
         "iamcco/markdown-preview.nvim",
-        run = "cd app && yarn install",
-        setup = function()
+        run = "cd app && npm install",
+        setup = function() 
             vim.g.mkdp_filetypes = { "markdown" }
         end,
         ft = { "markdown" },
     })
 
+    -- Lualine
     if packer_bootstrap then
         require('packer').sync()
     else
