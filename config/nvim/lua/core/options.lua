@@ -8,7 +8,7 @@ opt.hidden = true              -- Enable background buffers fx. :hide, this is u
 opt.ignorecase = true          -- Ignore case when searching
 
 -- shada 
-vim.opt.shadafile = vim.fn.expand('~/neovim.shada')  -- move outside onedrive path
+vim.opt.shadafile = vim.fn.has('win32') == 1 and vim.fn.expand('~/neovim.shada') or vim.fn.expand('~/.local/share/nvim/shada/main.shada')  -- save shada file in a custom location 
 vim.opt.shada = "'100,<50,s10,h"  -- save more history
 
 
