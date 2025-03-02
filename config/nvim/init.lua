@@ -41,8 +41,4 @@ if not packer_bootstrap then
     require('core')
     require('plugins')
 
-    -- Ensure LSP is loaded after plugins
-    vim.defer_fn(function()
-    end, 100)  -- Slight delay to ensure plugins are loaded
-
 end
