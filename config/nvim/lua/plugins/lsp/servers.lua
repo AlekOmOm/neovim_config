@@ -6,31 +6,31 @@ function M.setup(opts)
     -- Get lspconfig
     local status_ok, lspconfig = pcall(require, "lspconfig")
     if not status_ok then
-        vim.notify("lspconfig not found!", "error")
+        vim.notify("lspconfig not found!", 0)
         return
     end
 
     -- Get Mason path
     local mason_path = vim.fn.stdpath("data") .. "/mason"
     local mason_bin = mason_path .. "/bin/"
-    
+
     -- Helper to get the correct executable path
     local function get_mason_bin(server_name)
         local mapping = {
-            ["pyright"] = "pyright-langserver.cmd",
-            ["lua_ls"] = "lua-language-server.cmd",
-            ["tsserver"] = "typescript-language-server.cmd",
-            ["html"] = "vscode-html-language-server.cmd",
-            ["cssls"] = "vscode-css-language-server.cmd",
-            ["jsonls"] = "vscode-json-language-server.cmd",
-            ["yamlls"] = "yaml-language-server.cmd",
-            ["bashls"] = "bash-language-server.cmd",
-            ["dockerls"] = "docker-langserver.cmd",
-            ["docker_compose_language_service"] = "docker-compose-langserver.cmd",
-            ["vimls"] = "vim-language-server.cmd",
-            ["rust_analyzer"] = "rust-analyzer.cmd"
+            ["pyright"] = vim.fn.has('win32') == 1 and "pyright-langserver.cmd" or "pyright-langserver",
+            ["lua_ls"] = vim.fn.has('win32') == 1 and "lua-language-server.cmd" or "lua-language-server",
+            ["tsserver"] = vim.fn.has('win32') == 1 and "typescript-language-server.cmd" or "typescript-language-server",
+            ["html"] = vim.fn.has('win32') == 1 and "vscode-html-language-server.cmd" or "vscode-html-language-server",
+            ["cssls"] = vim.fn.has('win32') == 1 and "vscode-css-language-server.cmd" or "vscode-css-language-server",
+            ["jsonls"] = vim.fn.has('win32') == 1 and "vscode-json-language-server.cmd" or "vscode-json-language-server",
+            ["yamlls"] = vim.fn.has('win32') == 1 and "yaml-language-server.cmd" or "yaml-language-server",
+            ["bashls"] = vim.fn.has('win32') == 1 and "bash-language-server.cmd" or "bash-language-server",
+            ["dockerls"] = vim.fn.has('win32') == 1 and "docker-langserver.cmd" or "docker-langserver",
+            ["docker_compose_language_service"] = vim.fn.has('win32') == 1 and "docker-compose-langserver.cmd" or "docker-compose-langserver",
+            ["vimls"] = vim.fn.has('win32') == 1 and "vim-language-server.cmd" or "vim-language-server",
+            ["rust_analyzer"] = vim.fn.has('win32') == 1 and "rust-analyzer.cmd" or "rust-analyzer"
         }
-        
+
         local bin_name = mapping[server_name] or (server_name .. ".cmd")
         return mason_bin .. bin_name
     end
@@ -41,7 +41,7 @@ function M.setup(opts)
             cmd = { get_mason_bin("lua_ls") },
             settings = {
                 Lua = {
-                    diagnostics = { 
+                    diagnostics = {
                         globals = { 'vim' }
                     },
                     workspace = {
