@@ -31,7 +31,7 @@ function M.setup(opts)
             ["rust_analyzer"] = vim.fn.has('win32') == 1 and "rust-analyzer.cmd" or "rust-analyzer"
         }
 
-        local bin_name = mapping[server_name] or (server_name .. ".cmd")
+        local bin_name = mapping[server_name] or (vim.fn.has('win32') == 1 and (server_name .. ".cmd") or server_name)
         return mason_bin .. bin_name
     end
 
