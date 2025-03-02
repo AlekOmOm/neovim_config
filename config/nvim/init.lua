@@ -80,52 +80,57 @@ local function setup_lsp()
   -- Get path to Mason bin directory with executable language servers
   local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/"
   -- Define commands and executables for servers on Windows
+
+  local cmd_ending = vim.fn.has("win32") == 1 and ".cmd" or ""
+
   local server_configs = {
-    pyright = {
-      cmd = { mason_bin .. "pyright-langserver.cmd", "--stdio" },
-      settings = {
-        python = {
-          analysis = {
-            typeCheckingMode = "basic",
-            autoSearchPaths = true,
-            diagnosticMode = "workspace",
-            useLibraryCodeForTypes = true
+        pyright = {
+          cmd = { mason_bin .. "pyright-langserver"+cmd_ending, "--stdio" },
+          settings = {
+            python = {
+              analysis = {
+                typeCheckingMode = "basic",
+                autoSearchPaths = true,
+                diagnosticMode = "workspace",
+                useLibraryCodeForTypes = true
+              }
+            }
           }
+        },
+        lua_ls = {
+          cmd = { mason_bin .. "lua-language-server"+cmd_ending },
+          settings = {
+            Lua = {
+              diagnostics = { globals = { 'vim' } },
+              workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+              },
+              telemetry = { enable = false }
+            }
+          }
+        },
+        ts_ls = {
+          cmd = { mason_bin .. "typescript-language-server"+cmd_ending", "--stdio" }
+        },
+        html = {
+          cmd = { mason_bin .. "vscode-html-language-server"+cmd_ending, "--stdio" }
+        },
+        cssls = {
+          cmd = { mason_bin .. "vscode-css-language-server"+cmd_ending, "--stdio" }
+        },
+        jsonls = {
+          cmd = { mason_bin .. "vscode-json-language-server"+cmd_ending, "--stdio" }
+        },
+        rust_analyzer = {
+          cmd = { mason_bin .. "rust-analyzer"+cmd_ending }
         }
-      }
-    },
-    lua_ls = {
-      cmd = { mason_bin .. "lua-language-server.cmd" },
-      settings = {
-        Lua = {
-          diagnostics = { globals = { 'vim' } },
-          workspace = {
-            library = vim.api.nvim_get_runtime_file("", true),
-            checkThirdParty = false,
-          },
-          telemetry = { enable = false }
-        }
-      }
-    },
-    ts_ls = {
-      cmd = { mason_bin .. "typescript-language-server.cmd", "--stdio" }
-    },
-    html = {
-      cmd = { mason_bin .. "vscode-html-language-server.cmd", "--stdio" }
-    },
-    cssls = {
-      cmd = { mason_bin .. "vscode-css-language-server.cmd", "--stdio" }
-    },
-    jsonls = {
-      cmd = { mason_bin .. "vscode-json-language-server.cmd", "--stdio" }
-    },
-    rust_analyzer = {
-      cmd = { mason_bin .. "rust-analyzer.cmd" }
-    }
+      },
   }
 
   -- Configure each server
   for server_name, config in pairs(server_configs) do
+
     -- Check if the executable exists before configuring
     local cmd_path = config.cmd[1]
     local exists = vim.fn.filereadable(cmd_path) == 1
