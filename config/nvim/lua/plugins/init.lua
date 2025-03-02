@@ -49,13 +49,10 @@ return require('packer').startup(function(use)
                     'bashls',
 
                     -- visualization
-                    'prettier',
                     'eslint',
 
                     -- .markdown
-
                     'markdown_oxide',
-                    'markdown-toc',
 
                     -- testing
                 },
