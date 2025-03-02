@@ -1,4 +1,4 @@
-# ~/.config/nvim/lua/core/autocmds.lua
+--# ~/.config/nvim/lua/core/autocmds.lua
 local autocmd = vim.api.nvim_create_autocmd
 
 -- File running commands
@@ -21,3 +21,5 @@ autocmd('FileType', {
     end
   end
 })
+
+

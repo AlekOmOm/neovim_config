@@ -1,4 +1,4 @@
-#-- ~/.config/nvim/lua/plugins/completion.lua
+-- ~/.config/nvim/lua/plugins/completion.lua
 
 local M = {}
 

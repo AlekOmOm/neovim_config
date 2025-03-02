@@ -1,4 +1,4 @@
-# ~/.config/nvim/lua/core/options.lua
+-- ~/.config/nvim/lua/core/options.lua
 local opt = vim.opt
 local g = vim.g
 
@@ -16,3 +16,13 @@ opt.smartindent = true
 -- Leader key
 g.mapleader = ' '
 
+
+-- treesitter
+-- Folding settings (Treesitter-based)
+
+
+-- Global folding settings
+vim.opt.foldmethod = 'syntax'  -- Use syntax-based folding
+vim.opt.foldlevel = 1          -- Initial fold level
+vim.opt.foldlevelstart = 99    -- Start with all folds open
+vim.opt.foldenable = true      -- Enable folding
