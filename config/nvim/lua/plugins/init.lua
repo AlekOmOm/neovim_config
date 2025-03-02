@@ -1,5 +1,9 @@
 -- ~/.config/nvim/lua/plugins/init.lua
 
+
+
+local packer_bootstrap = require('packer').bootstrap
+
 local status_ok, packer = pcall(require, "packer")
 if not status_ok then
     return
@@ -15,16 +19,8 @@ return require('packer').startup(function(use)
     use {
         'williamboman/mason.nvim',
         config = function()
-            require('mason').setup({
-                ui = {
-                    icons = {
-                        package_installed = "✓",
-                        package_pending = "➜",
-                        package_uninstalled = "✗"
-                    }
-                },
-                max_concurrent_installers = 4,
-            })
+
+            require('mason').setup()
         end
     }
 
@@ -34,12 +30,34 @@ return require('packer').startup(function(use)
         config = function()
             require('mason-lspconfig').setup({
                 ensure_installed = {
+                    -- languages
                     'lua_ls',
                     'pyright',
                     'ts_ls',
                     'html',
                     'cssls',
-                    'jsonls'
+                    'jsonls',
+                    'rust_analyzer',
+
+                    -- workflows
+                    'yamlls',
+                    'dockerls',
+                    'docker_compose_language_service',
+
+                    -- terminals 
+                    'vimls',
+                    'bashls',
+
+                    -- visualization
+                    'prettier',
+                    'eslint',
+
+                    -- .markdown
+
+                    'markdown_oxide',
+                    'markdown-toc',
+
+                    -- testing
                 },
                 automatic_installation = true,
             })
@@ -99,7 +117,7 @@ return require('packer').startup(function(use)
             }
         }
     }
-    
+
     -- Treesitter
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -119,7 +137,7 @@ return require('packer').startup(function(use)
     use {
         'smjonas/inc-rename.nvim',
         config = function()
-            local status_ok, inc_rename = pcall(require, "inc_rename")
+            status_ok, inc_rename = pcall(require, "inc_rename")
             if not status_ok then
                 return
             end
@@ -147,6 +165,8 @@ return require('packer').startup(function(use)
     })
 
     -- Lualine
+
+
     if packer_bootstrap then
         require('packer').sync()
     else
