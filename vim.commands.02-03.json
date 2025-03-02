@@ -1,0 +1,133 @@
+
+{
+
+  "command_categories": {
+    "basic": [
+      {
+        "keys": ["h", "j", "k", "l"],
+        "description": "left, down, up, right"
+      },
+      {
+        "keys": ["gg"],
+        "description": "beginning of file"
+      },
+      {
+        "keys": ["G"],
+        "description": "end of file"
+      },
+      {
+        "keys": ["0", "$"],
+        "description": "move to start / end of line"
+      },
+      {
+        "keys": ["w", "b"],
+        "description": "-> beginning of next / prev word"
+      }
+    ],
+    
+    "insert": [
+      {
+        "keys": ["i", "I"],
+        "description": "enter insert at cursor / beginning of line"
+      },
+      {
+        "keys": ["a", "A"],
+        "description": "enter insert after cursor / end of the line"
+      },
+      {
+        "keys": ["o", "O"],
+        "description": "insert a new line below / above current"
+      },
+      {
+        "keys": ["r", "x"],
+        "description": "replace / delete char under cursor"
+      },
+      {
+        "keys": ["dd", "yy"],
+        "description": "delete / copy (yank) current line"
+      },
+      {
+        "keys": ["p", "P"],
+        "description": "paste after / before cursor"
+      },
+      {
+        "keys": ["u", "ctrl+r"],
+        "description": "undo / redo the last undone change"
+      }
+    ],
+    
+    "search_replace": [
+      {
+        "keys": ["/text", "?text"],
+        "description": "search forward / backward for \"text\""
+      },
+      {
+        "keys": ["n", "N"],
+        "description": "repeat the last search forward / backward"
+      },
+      {
+        "keys": [":%s/old/new/g"],
+        "description": "replace all occurrences of \"old\" with \"new\""
+      },
+      {
+        "keys": [":%s/old/new/gc"],
+        "description": "replace all occurrences with confirmation"
+      }
+    ],
+    
+    "running_code": [
+      {
+        "keys": ["F5"],
+        "description": "run current file (auto-detects language)"
+      },
+      {
+        "keys": [":split | terminal"],
+        "description": "open terminal in split window"
+      },
+      {
+        "keys": [":!command"],
+        "description": "run any shell command"
+      }
+    ],
+    
+    "copilot": [
+      {
+        "keys": ["<C-J>"],
+        "description": "accept suggestion"
+      },
+      {
+        "keys": ["<C-K>"],
+        "description": "next suggestion"
+      },
+      {
+        "keys": ["<C-L>"],
+        "description": "previous suggestion"
+      },
+      {
+        "keys": ["<C-H>"],
+        "description": "dismiss suggestion"
+      },
+      {
+        "keys": ["<A-J>"],
+        "description": "accept word (partial completion)"
+      },
+      {
+        "keys": ["<A-L>"],
+        "description": "accept line (partial completion)"
+      },
+      {
+        "keys": [":CopilotToggle"],
+        "description": "toggle Copilot on/off"
+      }
+    ]
+
+    
+
+
+
+
+  }
+
+}
+
+
