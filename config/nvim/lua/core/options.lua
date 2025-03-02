@@ -39,23 +39,12 @@ vim.opt.foldlevelstart = 99    -- Start with all folds open
 vim.opt.foldenable = true      -- Enable folding
 
 
--- Best practices for nvim options (https://www.reddit.com/r/neovim/comments/8w7n6h/best_practices_for_nvim_options/)
--- best options to set (in structure: def, explanation (usefulness), example (workflow), optional settings): 
--- 1. hidden
--- - def: this allows you to switch between buffers without saving them.
--- - explanation: useful since buffers is not saved when switching between them.
--- - example: :hide or :e
+-- Set UTF-8 encoding explicitly
+vim.opt.fileencoding = "utf-8"
 
--- 2. clipboard
--- - def: allows you to copy and paste from the system clipboard.
--- - explanation: useful since not all systems have the same clipboard, and this allows you to copy and paste between them.
--- - example: "+y, "+p (copy and paste)    note: not ctrl+c, ctrl+v, but workflow: in file, v, select, "+y, in file, "+p 
--- - optional settings: unnamedplus, unnamed, autoselect, exclude:.* (exclude all files), exclude:terminal (exclude terminal)
-
--- 3. ignorecase
--- - def: ignore case when searching.
--- - explanation: useful since you don't have to worry about case when searching.
--- - example: /search
--- 4. number
--- - def: show line numbers.
--- - explanation: useful for debugging and navigating.
+-- Set locale-related environment variables
+if vim.fn.has('win32') == 1 then
+    -- Set environment variables for Windows
+    vim.env.LANG = "en_US.UTF-8"
+    vim.env.LC_CTYPE = "en_US.UTF-8"
+end

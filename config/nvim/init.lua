@@ -1,5 +1,8 @@
 -- ~/.config/nvim/init.lua
 
+--- @type table
+vim = vim
+
 -- Bootstrap packer first
 local ensure_packer = function()
     local fn = vim.fn
@@ -24,7 +27,7 @@ end
 -- Initialize packer
 packer.startup(function(use)
     use 'wbthomason/packer.nvim'
-    
+
     if packer_bootstrap then
         packer.sync()
         return  -- Don't load configs if we're bootstrapping
@@ -33,6 +36,13 @@ end)
 
 -- Only load configurations if not bootstrapping
 if not packer_bootstrap then
+
+    -- load configs 
     require('core')
     require('plugins')
+
+    -- Ensure LSP is loaded after plugins
+    vim.defer_fn(function()
+    end, 100)  -- Slight delay to ensure plugins are loaded
+
 end

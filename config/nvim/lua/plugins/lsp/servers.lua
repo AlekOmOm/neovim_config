@@ -1,6 +1,8 @@
 -- ~/.config/nvim/lua/plugins/lsp/servers.lua
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+local M = {}
+
+-- List of servers to set up
 local servers = {
     'pyright',
     'dockerls',
@@ -16,18 +18,14 @@ local servers = {
     'lua_ls'
 }
 
-for _, lsp in ipairs(servers) do
-    local config = {
-        capabilities = capabilities
-    }
-
-    -- Lua-specific settings
-    if lsp == 'lua_ls' then
-        config.settings = {
+function M.setup(opts)
+    -- Server-specific configurations
+    local server_configs = {
+        lua_ls = {
+          settings = {
             Lua = {
-                diagnostics = {
-                    globals = { 'vim' }  -- Recognize 'vim' global
-                },
+              diagnostics = { 
+                  globals = { 'vim' } },
                 workspace = {
                     library = vim.api.nvim_get_runtime_file("", true),
                     checkThirdParty = false,
@@ -36,19 +34,55 @@ for _, lsp in ipairs(servers) do
                     enable = false,
                 },
             }
-        }
-    end
-   
-    -- Rust-specific settings
-    if lsp == 'rust_analyzer' then
-        config.settings = {
-            ['rust-analyzer'] = {
-                checkOnSave = {
-                    command = "clippy"
-                }
+          }
+        },
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                typeCheckingMode = "basic",
+                autoSearchPaths = true,
+                diagnosticMode = "workspace",
+                useLibraryCodeForTypes = true
+              }
             }
+          }
+        },
+        rust_analyzer = {
+          settings = {
+            ["rust-analyzer"] = {
+              checkOnSave = {
+                command = "clippy"
+              }
+            }
+          }
         }
+
+        -- other server-specific configs
+    }
+
+    -- Setup each server
+      for server_name, config in pairs(server_configs) do
+
+        config.on_attach = opts.on_attach
+        config.capabilities = opts.capabilities
+        
+        lspconfig[server_name].setup(config)
+      end
+      
+      -- Setup servers without special configs
+      local simple_servers = {
+        'html', 'cssls', 'jsonls', 'bashls', 'dockerls'
+        -- more servers
+      }
+      
+      for _, server in ipairs(simple_servers) do
+        lspconfig[server].setup({
+          on_attach = opts.on_attach,
+          capabilities = opts.capabilities
+        })
+      end
     end
-    
-    require('lspconfig')[lsp].setup(config)
-end
+
+return M
+

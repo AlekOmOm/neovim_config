@@ -1,10 +1,15 @@
 -- ~/.config/nvim/lua/plugins/setup.lua
 
 return function()
-    require('plugins.copilot')
-    require('plugins.lsp')
-    require('plugins.completion')
-    require('plugins.telescope')
-    require('plugins.treesitter')
-    require('plugins.theme')
+  -- Load core plugins first
+  require('plugins.theme')
+  require('plugins.treesitter').setup()
+  
+  -- Load LSP and completion
+  require('plugins.lsp').setup()
+  require('plugins.completion').setup()
+  
+  -- Load UI and tools
+  require('plugins.telescope').setup()
+  require('plugins.copilot').setup()
 end

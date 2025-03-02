@@ -10,9 +10,42 @@ return require('packer').startup(function(use)
     use 'github/copilot.vim'
 
     -- LSP Support
+
     use 'neovim/nvim-lspconfig'
-    use 'williamboman/mason.nvim'
-    use 'williamboman/mason-lspconfig.nvim'
+    use {
+        'williamboman/mason.nvim',
+        config = function()
+            require('mason').setup({
+                ui = {
+                    icons = {
+                        package_installed = "✓",
+                        package_pending = "➜",
+                        package_uninstalled = "✗"
+                    }
+                },
+                max_concurrent_installers = 4,
+            })
+        end
+    }
+
+    use {
+        'williamboman/mason-lspconfig.nvim',
+        after = 'mason.nvim',
+        config = function()
+            require('mason-lspconfig').setup({
+                ensure_installed = {
+                    'lua_ls',
+                    'pyright',
+                    'ts_ls',
+                    'html',
+                    'cssls',
+                    'jsonls'
+                },
+                automatic_installation = true,
+            })
+        end
+    }
+
 
     -- Completion
     use {
