@@ -2,22 +2,26 @@
 
 Personal neovim config
 
-## Requirements
-**Important:** This configuration requires Neovim >= 0.9.0. If you're on Debian stable, you'll need to install Neovim from source as the default repositories have older versions:
 
+## init 
 ```bash
 # Install build dependencies
-sudo apt-get install ninja-build gettext cmake unzip curl
+    sudo apt-get install ninja-build gettext cmake unzip curl
 
-# Build from source
-cd ~
-mkdir neovim-source && cd neovim-source
-git clone https://github.com/neovim/neovim
-cd neovim
-git checkout stable
-make CMAKE_BUILD_TYPE=RelWithDebInfo
-sudo make install
+# git clone 
+    git clone git@github.com:AlekOmOm/neovim_config.git
+
+# init with Script
+
+    ./init_scripts/sync_nvim.sh
 ```
+
+### Requirements
+
+***important:*** 
+
+- config requires Neovim >= 0.9.0. 
+
 
 ## Peculiarities
 - OneDrive sync to AppData/Local/nvim
