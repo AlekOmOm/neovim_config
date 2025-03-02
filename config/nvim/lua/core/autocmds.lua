@@ -15,27 +15,10 @@ autocmd('FileType', {
       typescript = ':!ts-node %',
       rust = ':!cargo run'
     }
-    
+
     if cmd[filetype] then
       vim.keymap.set('n', '<F5>', cmd[filetype] .. '<CR>', { buffer = true })
     end
   end
-})
-
--- Add this to your autocmds.lua
-vim.api.nvim_create_autocmd("BufWriteCmd", {
-    pattern = "*",
-    callback = function()
-        local modified = vim.bo.modified
-
-
-        if modified then
-            vim.cmd("write")
-        else
-            -- Silently proceed without error message
-            vim.cmd("noautocmd write")
-        end
-        return true -- Prevent the default BufWriteCmd behavior
-    end
 })
 
