@@ -8,8 +8,9 @@ function M.start_server(server_name, filetype)
     local mason_path = vim.fn.stdpath("data") .. "/mason"
     local mason_bin = mason_path .. "/bin/"
 
-    -- Mapping of server names to their executable filenames on Windows
     local is_windows = vim.fn.has('win32') == 1
+
+    -- Mapping of server names to their executable filenames on Windows
     local mapping = {
         ["pyright"] = is_windows and "pyright-langserver.cmd" or "pyright-langserver",
         ["lua_ls"] = is_windows and "lua-language-server.cmd" or "lua-language-server",
@@ -26,8 +27,12 @@ function M.start_server(server_name, filetype)
     }
 
     -- Get the correct executable name
-    local executable = mapping[server_name] or (server_name .. ".cmd")
+    local executable = mapping[server_name]
+    if not executable then
+        executable = is_windows and (server_name .. ".cmd") or server_name
+    end
     local cmd_path = mason_bin .. executable
+
 
     -- Check if the executable exists
     local exists = vim.fn.filereadable(cmd_path) == 1
@@ -144,9 +149,13 @@ function M.verify_mason()
 
     for _, server in ipairs(servers) do
 
-        local executable = mapping[server] or (is_windows and (server .. ".cmd") or server)
+        local executable = mapping[server]
+        if not executable then
+            executable = is_windows and (server .. ".cmd") or server
+        end
         local path = mason_bin .. executable
         local exists = vim.fn.filereadable(path) == 1
+
 
         if exists then
             output = output .. "✓ " .. server .. " (" .. path .. ")\n"

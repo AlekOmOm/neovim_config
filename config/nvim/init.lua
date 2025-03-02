@@ -42,12 +42,59 @@ if not packer_bootstrap then
 
 end
 
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--- platform mapping  
+
+
+_G.get_platform_bin = function(server_name)
+    local is_windows = vim.fn.has('win32') == 1
+    local base_name = server_name
+    -- Mapping without extensions
+    local mapping = {
+        ["pyright"] = "pyright-langserver",
+        ["lua_ls"] = "lua-language-server",
+        ["tsserver"] = "typescript-language-server", 
+        ["html"] = "vscode-html-language-server",
+        ["cssls"] = "vscode-css-language-server",
+        ["jsonls"] = "vscode-json-language-server",
+        ["yamlls"] = "yaml-language-server",
+        ["bashls"] = "bash-language-server",
+        ["dockerls"] = "docker-langserver",
+        ["docker_compose_language_service"] = "docker-compose-langserver",
+        ["vimls"] = "vim-language-server",
+        ["rust_analyzer"] = "rust-analyzer"
+    }
+    if mapping[server_name] then
+        base_name = mapping[server_name]
+    end
+    if is_windows then
+        return base_name .. ".cmd"
+    else
+        return base_name
+    end
+end
+
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --- Direct LSP configuration
 
 local function setup_lsp()
+
+  -- Platform detection - ensure no .cmd is used on Linux
+  local is_windows = vim.fn.has('win32') == 1
+  -- Helper function to get correct executable name
+  local function get_exe(base_name)
+    if is_windows then
+      return base_name .. ".cmd"
+    else
+      return base_name
+    end
+  end
+
+
+
   -- Check if necessary plugins are available
   local has_lspconfig, lspconfig = pcall(require, "lspconfig")
   if not has_lspconfig then
@@ -81,11 +128,10 @@ local function setup_lsp()
   local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/"
   -- Define commands and executables for servers on Windows
 
-  local cmd_ending = vim.fn.has("win32") == 1 and ".cmd" or ""
 
   local server_configs = {
         pyright = {
-          cmd = { mason_bin .. "pyright-langserver"+cmd_ending, "--stdio" },
+      	 cmd = { mason_bin .. get_exe("pyright-langserver"), "--stdio" },
           settings = {
             python = {
               analysis = {
@@ -98,7 +144,7 @@ local function setup_lsp()
           }
         },
         lua_ls = {
-          cmd = { mason_bin .. "lua-language-server"+cmd_ending },
+          cmd = { mason_bin .. get_exe("lua-language-server") }, 
           settings = {
             Lua = {
               diagnostics = { globals = { 'vim' } },
@@ -111,28 +157,33 @@ local function setup_lsp()
           }
         },
         ts_ls = {
-          cmd = { mason_bin .. "typescript-language-server"+cmd_ending", "--stdio" }
+          cmd = { mason_bin .. get_exe("typescript-language-server"), "--stdio" },
         },
         html = {
-          cmd = { mason_bin .. "vscode-html-language-server"+cmd_ending, "--stdio" }
+          cmd = { mason_bin .. get_exe("vscode-html-language-server"), "--stdio" }
         },
         cssls = {
-          cmd = { mason_bin .. "vscode-css-language-server"+cmd_ending, "--stdio" }
+          cmd = { mason_bin .. get_exe("vscode-css-language-server"), "--stdio" }
         },
         jsonls = {
-          cmd = { mason_bin .. "vscode-json-language-server"+cmd_ending, "--stdio" }
+          cmd = { mason_bin .. get_exe("vscode-json-language-server"), "--stdio" }
         },
         rust_analyzer = {
-          cmd = { mason_bin .. "rust-analyzer"+cmd_ending }
+          cmd = { mason_bin .. get_exe("rust-analyzer") }
         }
-      },
-  }
+      }
 
   -- Configure each server
   for server_name, config in pairs(server_configs) do
 
     -- Check if the executable exists before configuring
     local cmd_path = config.cmd[1]
+    if cmd_path:match(".cmd$") and not is_windows then
+
+	-- Remove .cmd suffix on non-Windows platforms
+	cmd_path = cmd_path:gsub(".cmd$", "")
+    end
+
     local exists = vim.fn.filereadable(cmd_path) == 1
 
     if exists then
@@ -148,13 +199,15 @@ local function setup_lsp()
       print("LSP executable not found: " .. cmd_path)
     end
   end
+
   -- Create simple diagnostic commands
   vim.api.nvim_create_user_command('LspInfo', function()
-    -- deprecated: local clients = vim.lsp.get_active_clients()
+
     local clients = vim.lsp.get_clients() or {}
     clients = vim.tbl_filter(function(client)
       return client.name ~= "null-ls"
     end, clients)
+
     if #clients == 0 then
       print("No active LSP clients")
       return

@@ -15,23 +15,28 @@ function M.setup(opts)
     local mason_bin = mason_path .. "/bin/"
 
     -- Helper to get the correct executable path
-    local function get_mason_bin(server_name)
+   local function get_mason_bin(server_name)
+        local is_windows = vim.fn.has('win32') == 1
+
         local mapping = {
-            ["pyright"] = vim.fn.has('win32') == 1 and "pyright-langserver.cmd" or "pyright-langserver",
-            ["lua_ls"] = vim.fn.has('win32') == 1 and "lua-language-server.cmd" or "lua-language-server",
-            ["tsserver"] = vim.fn.has('win32') == 1 and "typescript-language-server.cmd" or "typescript-language-server",
-            ["html"] = vim.fn.has('win32') == 1 and "vscode-html-language-server.cmd" or "vscode-html-language-server",
-            ["cssls"] = vim.fn.has('win32') == 1 and "vscode-css-language-server.cmd" or "vscode-css-language-server",
-            ["jsonls"] = vim.fn.has('win32') == 1 and "vscode-json-language-server.cmd" or "vscode-json-language-server",
-            ["yamlls"] = vim.fn.has('win32') == 1 and "yaml-language-server.cmd" or "yaml-language-server",
-            ["bashls"] = vim.fn.has('win32') == 1 and "bash-language-server.cmd" or "bash-language-server",
-            ["dockerls"] = vim.fn.has('win32') == 1 and "docker-langserver.cmd" or "docker-langserver",
-            ["docker_compose_language_service"] = vim.fn.has('win32') == 1 and "docker-compose-langserver.cmd" or "docker-compose-langserver",
-            ["vimls"] = vim.fn.has('win32') == 1 and "vim-language-server.cmd" or "vim-language-server",
-            ["rust_analyzer"] = vim.fn.has('win32') == 1 and "rust-analyzer.cmd" or "rust-analyzer"
+            ["pyright"] = is_windows and "pyright-langserver.cmd" or "pyright-langserver",
+            ["lua_ls"] = is_windows and "lua-language-server.cmd" or "lua-language-server",
+            ["tsserver"] = is_windows and "typescript-language-server.cmd" or "typescript-language-server",
+            ["html"] = is_windows and "vscode-html-language-server.cmd" or "vscode-html-language-server",
+            ["cssls"] = is_windows and "vscode-css-language-server.cmd" or "vscode-css-language-server",
+            ["jsonls"] = is_windows and "vscode-json-language-server.cmd" or "vscode-json-language-server",
+            ["yamlls"] = is_windows and "yaml-language-server.cmd" or "yaml-language-server",
+            ["bashls"] = is_windows and "bash-language-server.cmd" or "bash-language-server",
+            ["dockerls"] = is_windows and "docker-langserver.cmd" or "docker-langserver",
+            ["docker_compose_language_service"] = is_windows and "docker-compose-langserver.cmd" or "docker-compose-langserver",
+            ["vimls"] = is_windows and "vim-language-server.cmd" or "vim-language-server",
+            ["rust_analyzer"] = is_windows and "rust-analyzer.cmd" or "rust-analyzer"
         }
 
-        local bin_name = mapping[server_name] or (vim.fn.has('win32') == 1 and (server_name .. ".cmd") or server_name)
+        local bin_name = mapping[server_name]
+        if not bin_name then
+            bin_name = is_windows and (server_name .. ".cmd") or server_name
+        end
         return mason_bin .. bin_name
     end
 
