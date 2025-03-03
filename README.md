@@ -46,7 +46,9 @@ Personal neovim config
     │       ├── init.lua
     │       ├── mason.lua
     │       └── servers.lua
-    └── utils/  (not yet implemented)
+    └── utils/  
+        ├── init.lua
+        └── init_file.lua
 ```
 
 ## Complete list of both plugins and core configurations
@@ -98,3 +100,7 @@ Personal neovim config
      - Space+rn: rename
      - Space+re: extract code
      - Space+rf: extract to file
+
+9. Utils 
+    - new dir and file: `nvim -i src/<new-dir>/<new-file>.lua`
+

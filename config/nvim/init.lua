@@ -44,6 +44,57 @@ end
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--- Handle command-line arguments
+
+
+local function handle_args()
+  local args = vim.v.argv
+  
+  -- Check for our custom flags
+  for i, arg in ipairs(args) do
+    if arg == "-i" and i < #args then
+      -- Create directory structure and empty file
+      local file_path = vim.fn.fnamemodify(args[i+1], ":p")
+      
+      -- Check if utils/init_file module is available
+      local status_ok, init_file = pcall(require, "utils.init_file")
+      if status_ok then
+        -- Use the utility function
+        if init_file.init_empty_file(file_path) then
+          -- Remove the flag and path from args to prevent nvim from trying to handle them
+          table.remove(args, i)
+          table.remove(args, i)
+          -- Add the file path back as a regular argument
+          table.insert(args, file_path)
+          -- Update argv
+          vim.v.argv = args
+        end
+      else
+        -- Fallback if module not available
+        local dir = vim.fn.fnamemodify(file_path, ":h")
+        if vim.fn.isdirectory(dir) == 0 then
+          vim.fn.mkdir(dir, "p")
+        end
+        -- Create empty file
+        local file = io.open(file_path, "w")
+        if file then
+          file:close()
+        end
+      end
+      break
+    end
+  end
+end
+
+-- Run the argument handler
+handle_args()
+
+
+
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --- platform mapping  
 
 
