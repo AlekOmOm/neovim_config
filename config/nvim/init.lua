@@ -46,41 +46,45 @@ end
 --------------------------------------------------------------------------------
 --- Handle command-line arguments
 
+-- Add this to your init.lua file after the packer bootstrap section
 
+-- Handle command-line arguments
 local function handle_args()
   local args = vim.v.argv
-  
+
   -- Check for our custom flags
   for i, arg in ipairs(args) do
     if arg == "-i" and i < #args then
-      -- Create directory structure and empty file
+      -- Get the file path
       local file_path = vim.fn.fnamemodify(args[i+1], ":p")
-      
-      -- Check if utils/init_file module is available
-      local status_ok, init_file = pcall(require, "utils.init_file")
-      if status_ok then
-        -- Use the utility function
-        if init_file.init_empty_file(file_path) then
-          -- Remove the flag and path from args to prevent nvim from trying to handle them
-          table.remove(args, i)
-          table.remove(args, i)
-          -- Add the file path back as a regular argument
-          table.insert(args, file_path)
-          -- Update argv
-          vim.v.argv = args
-        end
-      else
-        -- Fallback if module not available
-        local dir = vim.fn.fnamemodify(file_path, ":h")
+
+      -- Get the directory from the file path
+      local dir = vim.fn.fnamemodify(file_path, ":h")
+
+      -- Create directory structure if it doesn't exist
+      if vim.fn.isdirectory(dir) == 0 then
+        vim.fn.mkdir(dir, "p")
         if vim.fn.isdirectory(dir) == 0 then
-          vim.fn.mkdir(dir, "p")
-        end
-        -- Create empty file
-        local file = io.open(file_path, "w")
-        if file then
-          file:close()
+          vim.notify("Failed to create directory: " .. dir, 0) -- ERROR only
+          return
         end
       end
+
+      -- Create the file if it doesn't exist
+      if vim.fn.filereadable(file_path) == 0 then
+        local file = io.open(file_path, "w")
+        if not file then
+          vim.notify("Failed to create file: " .. file_path, 0) -- ERROR only
+          return
+        end
+        file:close()
+      end
+
+      -- Exit Neovim immediately on success
+      vim.schedule(function()
+        vim.cmd('quit')
+      end)
+
       break
     end
   end
@@ -105,7 +109,7 @@ _G.get_platform_bin = function(server_name)
     local mapping = {
         ["pyright"] = "pyright-langserver",
         ["lua_ls"] = "lua-language-server",
-        ["tsserver"] = "typescript-language-server", 
+        ["tsserver"] = "typescript-language-server",
         ["html"] = "vscode-html-language-server",
         ["cssls"] = "vscode-css-language-server",
         ["jsonls"] = "vscode-json-language-server",
