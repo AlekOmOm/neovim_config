@@ -72,6 +72,7 @@ return require('packer').startup(function(use)
             'hrsh7th/cmp-cmdline',
             'L3MON4D3/LuaSnip',
             'saadparwaiz1/cmp_luasnip',
+            'hrsh7th/cmp-emoji'
         },
         config = function()
             local cmp = require('cmp')
@@ -172,7 +173,6 @@ return require('packer').startup(function(use)
         })
 
         -- Markdown emoji 
-        use 'hrsh7th/nvim-cmp-emoji'    -- emoji completion
         use 'junegunn/vim-emoji'        -- general emoji support
 
 
