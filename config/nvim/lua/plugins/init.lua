@@ -151,19 +151,32 @@ return require('packer').startup(function(use)
     -- Git
     use 'tpope/vim-fugitive'
 
-    -- markdown-preview
-    use({
-        "iamcco/markdown-preview.nvim",
-        run = "cd app && npm install",
-        setup = function() 
-            vim.g.mkdp_filetypes = { "markdown" }
-        end,
-        ft = { "markdown" },
-    })
+    -- ### ---------------------------------------------------- ###
+    -- ### -- Markdown
 
-    -- Lualine
+        -- markdown-preview
+       use({
+            "iamcco/markdown-preview.nvim",
+            run = function() vim.fn.system("cd app && npm install") end,
+            setup = function() 
+                vim.g.mkdp_filetypes = { "markdown" }
+                vim.g.mkdp_auto_start = 0
+                vim.g.mkdp_auto_close = 1
+                vim.g.mkdp_refresh_slow = 0
+                vim.g.mkdp_command_for_global = 0
+                vim.g.mkdp_open_to_the_world = 0
+                vim.g.mkdp_browser = ""  -- Use default browser
+                vim.g.mkdp_echo_preview_url = 1  -- Show preview URL in command line
+            end,
+            ft = { "markdown" },
+        })
+
+        -- Markdown emoji 
+        use 'hrsh7th/nvim-cmp-emoji'    -- emoji completion
+        use 'junegunn/vim-emoji'        -- general emoji support
 
 
+    -- packer bootstrap
     if packer_bootstrap then
         require('packer').sync()
     else

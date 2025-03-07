@@ -47,6 +47,7 @@ function M.setup()
         sources = cmp.config.sources({
             { name = 'nvim_lsp' },
             { name = 'luasnip' },
+            { name = 'emoji' },
             { name = 'buffer' },
             { name = 'path' },
         }),
