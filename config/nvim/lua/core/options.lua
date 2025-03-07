@@ -2,6 +2,14 @@
 local opt = vim.opt
 local g = vim.g
 
+
+-- 
+vim.opt.termguicolors = true  -- Enable 24-bit RGB color in the TUI
+vim.opt.background = 'dark'   -- Tell vim that we're using a dark background
+
+vim.opt.updatetime = 300  -- Faster completion and diagnostics (when you type something, the completion menu will appear faster)
+
+
 -- Global options
 opt.clipboard = 'unnamedplus'  -- Use the system clipboard fx. for copy paste on windows and linux: "+y, "+p
 opt.hidden = true              -- Enable background buffers fx. :hide, this is useful for :e and :b also
@@ -10,6 +18,7 @@ opt.ignorecase = true          -- Ignore case when searching
 -- shada 
 vim.opt.shadafile = vim.fn.has('win32') == 1 and vim.fn.expand('~/neovim.shada') or vim.fn.expand('~/.local/share/nvim/shada/main.shada')  -- save shada file in a custom location 
 vim.opt.shada = "'100,<50,s10,h"  -- save more history
+
 
 
 -- Basic settings

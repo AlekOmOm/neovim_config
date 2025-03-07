@@ -13,6 +13,27 @@ return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
     use 'github/copilot.vim'
 
+
+    -- ### ---------------------------------------------------- ###
+
+    -- notifications
+
+    use {
+      "rcarriga/nvim-notify",
+      config = function()
+        vim.notify = require("notify")
+        require("notify").setup({
+          timeout = 3000,
+          max_width = 80,
+          max_height = 20,
+        })
+      end
+    }
+
+
+
+    ------------------------------------
+
     -- LSP Support
 
     use 'neovim/nvim-lspconfig'
@@ -156,25 +177,20 @@ return require('packer').startup(function(use)
     -- ### -- Markdown
 
         -- markdown-preview
-       use({
-            "iamcco/markdown-preview.nvim",
-            run = function() vim.fn.system("cd app && npm install") end,
-            setup = function() 
-                vim.g.mkdp_filetypes = { "markdown" }
-                vim.g.mkdp_auto_start = 0
-                vim.g.mkdp_auto_close = 1
-                vim.g.mkdp_refresh_slow = 0
-                vim.g.mkdp_command_for_global = 0
-                vim.g.mkdp_open_to_the_world = 0
-                vim.g.mkdp_browser = ""  -- Use default browser
-                vim.g.mkdp_echo_preview_url = 1  -- Show preview URL in command line
-            end,
-            ft = { "markdown" },
+        use({
+          "iamcco/markdown-preview.nvim",
+          run = "cd app && npm install",
+          setup = function() 
+            vim.g.mkdp_filetypes = { "markdown" }
+          end,
+          ft = { "markdown" },
         })
 
         -- Markdown emoji 
         use 'junegunn/vim-emoji'        -- general emoji support
 
+
+    -- ### ---------------------------------------------------- ###
 
     -- packer bootstrap
     if packer_bootstrap then

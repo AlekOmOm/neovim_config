@@ -17,9 +17,12 @@ M.on_attach = function(client, bufnr)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
-  
+
   -- Notify when an LSP attaches to a buffer
-  vim.notify("LSP " .. client.name .. " attached to buffer " .. bufnr, "info")
+    vim.defer_fn(function()
+      vim.notify("LSP " .. client.name .. " attached to buffer " .. bufnr, "info")
+    end, 100)  -- Small delay to prevent overlapping
+
 end
 
 -- Add capabilities for auto-completion
@@ -32,16 +35,16 @@ end
 function M.setup()
   -- Set LSP log level for better debugging
   vim.lsp.set_log_level("info")
-  
+
   -- Load Mason configurations
   local mason_setup_ok, _ = pcall(function()
     require('plugins.lsp.mason').setup()
   end)
-  
+
   if not mason_setup_ok then
     vim.notify("Failed to setup Mason", "error")
   end
-  
+
   -- Add a delay to ensure Mason registrations complete
   vim.defer_fn(function()
     -- Setup servers with common configurations
