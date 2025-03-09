@@ -133,7 +133,7 @@ _G.packer_plugins = {
     url = "https://github.com/iamcco/markdown-preview.nvim"
   },
   ["mason-lspconfig.nvim"] = {
-    config = { "\27LJ\2\n“\2\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\21ensure_installed\1\0\2\27automatic_installation\2\21ensure_installed\0\1\15\0\0\vlua_ls\fpyright\nts_ls\thtml\ncssls\vjsonls\18rust_analyzer\vyamlls\rdockerls$docker_compose_language_service\nvimls\vbashls\veslint\19markdown_oxide\nsetup\20mason-lspconfig\frequire\0" },
+    config = { "\27LJ\2\n“\2\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\21ensure_installed\1\0\2\21ensure_installed\0\27automatic_installation\2\1\15\0\0\vlua_ls\fpyright\nts_ls\thtml\ncssls\vjsonls\18rust_analyzer\vyamlls\rdockerls$docker_compose_language_service\nvimls\vbashls\veslint\19markdown_oxide\nsetup\20mason-lspconfig\frequire\0" },
     load_after = {},
     loaded = true,
     needs_bufread = false,
@@ -149,7 +149,7 @@ _G.packer_plugins = {
     url = "https://github.com/williamboman/mason.nvim"
   },
   ["nvim-cmp"] = {
-    config = { "\27LJ\2\n-\0\1\4\1\2\0\5-\1\0\0009\1\0\0019\3\1\0B\1\2\1K\0\1\0\1À\tbody\15lsp_expand˜\4\1\0\v\0\29\00096\0\0\0'\2\1\0B\0\2\0026\1\0\0'\3\2\0B\1\2\0029\2\3\0005\4\a\0005\5\5\0003\6\4\0=\6\6\5=\5\b\0049\5\t\0009\5\n\0059\5\v\0055\a\r\0009\b\t\0009\b\f\b)\nüÿB\b\2\2=\b\14\a9\b\t\0009\b\f\b)\n\4\0B\b\2\2=\b\15\a9\b\t\0009\b\16\bB\b\1\2=\b\17\a9\b\t\0009\b\18\bB\b\1\2=\b\19\a9\b\t\0009\b\20\b5\n\21\0B\b\2\2=\b\22\aB\5\2\2=\5\t\0049\5\23\0009\5\24\0054\a\5\0005\b\25\0>\b\1\a5\b\26\0>\b\2\a5\b\27\0>\b\3\a5\b\28\0>\b\4\aB\5\2\2=\5\24\4B\2\2\0012\0\0€K\0\1\0\1\0\1\tname\tpath\1\0\1\tname\vbuffer\1\0\1\tname\fluasnip\1\0\1\tname\rnvim_lsp\fsources\vconfig\t<CR>\1\0\1\vselect\2\fconfirm\n<C-e>\nabort\14<C-Space>\rcomplete\n<C-f>\n<C-b>\1\0\5\t<CR>\0\n<C-e>\0\14<C-Space>\0\n<C-f>\0\n<C-b>\0\16scroll_docs\vinsert\vpreset\fmapping\fsnippet\1\0\3\fsnippet\0\fmapping\0\fsources\0\vexpand\1\0\1\vexpand\0\0\nsetup\fluasnip\bcmp\frequire\0" },
+    config = { "\27LJ\2\n-\0\1\4\1\2\0\5-\1\0\0009\1\0\0019\3\1\0B\1\2\1K\0\1\0\1À\tbody\15lsp_expand˜\4\1\0\v\0\29\00096\0\0\0'\2\1\0B\0\2\0026\1\0\0'\3\2\0B\1\2\0029\2\3\0005\4\a\0005\5\5\0003\6\4\0=\6\6\5=\5\b\0049\5\t\0009\5\n\0059\5\v\0055\a\r\0009\b\t\0009\b\f\b)\nüÿB\b\2\2=\b\14\a9\b\t\0009\b\f\b)\n\4\0B\b\2\2=\b\15\a9\b\t\0009\b\16\bB\b\1\2=\b\17\a9\b\t\0009\b\18\bB\b\1\2=\b\19\a9\b\t\0009\b\20\b5\n\21\0B\b\2\2=\b\22\aB\5\2\2=\5\t\0049\5\23\0009\5\24\0054\a\5\0005\b\25\0>\b\1\a5\b\26\0>\b\2\a5\b\27\0>\b\3\a5\b\28\0>\b\4\aB\5\2\2=\5\24\4B\2\2\0012\0\0€K\0\1\0\1\0\1\tname\tpath\1\0\1\tname\vbuffer\1\0\1\tname\fluasnip\1\0\1\tname\rnvim_lsp\fsources\vconfig\t<CR>\1\0\1\vselect\2\fconfirm\n<C-e>\nabort\14<C-Space>\rcomplete\n<C-f>\n<C-b>\1\0\5\n<C-b>\0\t<CR>\0\n<C-e>\0\14<C-Space>\0\n<C-f>\0\16scroll_docs\vinsert\vpreset\fmapping\fsnippet\1\0\3\fsources\0\fsnippet\0\fmapping\0\vexpand\1\0\1\vexpand\0\0\nsetup\fluasnip\bcmp\frequire\0" },
     loaded = true,
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\nvim-cmp",
     url = "https://github.com/hrsh7th/nvim-cmp"
@@ -158,6 +158,12 @@ _G.packer_plugins = {
     loaded = true,
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\nvim-lspconfig",
     url = "https://github.com/neovim/nvim-lspconfig"
+  },
+  ["nvim-notify"] = {
+    config = { "\27LJ\2\nw\0\0\4\0\5\0\f6\0\0\0006\1\2\0'\3\1\0B\1\2\2=\1\1\0006\0\2\0'\2\1\0B\0\2\0029\0\3\0005\2\4\0B\0\2\1K\0\1\0\1\0\3\ftimeout\3¸\23\15max_height\3\20\14max_width\3P\nsetup\frequire\vnotify\bvim\0" },
+    loaded = true,
+    path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\nvim-notify",
+    url = "https://github.com/rcarriga/nvim-notify"
   },
   ["nvim-treesitter"] = {
     loaded = true,
@@ -198,6 +204,13 @@ _G.packer_plugins = {
     loaded = true,
     path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\start\\vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
+  },
+  ["vim-prettier"] = {
+    loaded = false,
+    needs_bufread = true,
+    only_cond = false,
+    path = "C:\\Users\\HP\\AppData\\Local\\nvim-data\\site\\pack\\packer\\opt\\vim-prettier",
+    url = "https://github.com/prettier/vim-prettier"
   }
 }
 
@@ -206,14 +219,18 @@ time([[Defining packer_plugins]], false)
 time([[Setup for markdown-preview.nvim]], true)
 try_loadstring("\27LJ\2\n=\0\0\2\0\4\0\0056\0\0\0009\0\1\0005\1\3\0=\1\2\0K\0\1\0\1\2\0\0\rmarkdown\19mkdp_filetypes\6g\bvim\0", "setup", "markdown-preview.nvim")
 time([[Setup for markdown-preview.nvim]], false)
--- Config for: nvim-cmp
-time([[Config for nvim-cmp]], true)
-try_loadstring("\27LJ\2\n-\0\1\4\1\2\0\5-\1\0\0009\1\0\0019\3\1\0B\1\2\1K\0\1\0\1À\tbody\15lsp_expand˜\4\1\0\v\0\29\00096\0\0\0'\2\1\0B\0\2\0026\1\0\0'\3\2\0B\1\2\0029\2\3\0005\4\a\0005\5\5\0003\6\4\0=\6\6\5=\5\b\0049\5\t\0009\5\n\0059\5\v\0055\a\r\0009\b\t\0009\b\f\b)\nüÿB\b\2\2=\b\14\a9\b\t\0009\b\f\b)\n\4\0B\b\2\2=\b\15\a9\b\t\0009\b\16\bB\b\1\2=\b\17\a9\b\t\0009\b\18\bB\b\1\2=\b\19\a9\b\t\0009\b\20\b5\n\21\0B\b\2\2=\b\22\aB\5\2\2=\5\t\0049\5\23\0009\5\24\0054\a\5\0005\b\25\0>\b\1\a5\b\26\0>\b\2\a5\b\27\0>\b\3\a5\b\28\0>\b\4\aB\5\2\2=\5\24\4B\2\2\0012\0\0€K\0\1\0\1\0\1\tname\tpath\1\0\1\tname\vbuffer\1\0\1\tname\fluasnip\1\0\1\tname\rnvim_lsp\fsources\vconfig\t<CR>\1\0\1\vselect\2\fconfirm\n<C-e>\nabort\14<C-Space>\rcomplete\n<C-f>\n<C-b>\1\0\5\t<CR>\0\n<C-e>\0\14<C-Space>\0\n<C-f>\0\n<C-b>\0\16scroll_docs\vinsert\vpreset\fmapping\fsnippet\1\0\3\fsnippet\0\fmapping\0\fsources\0\vexpand\1\0\1\vexpand\0\0\nsetup\fluasnip\bcmp\frequire\0", "config", "nvim-cmp")
-time([[Config for nvim-cmp]], false)
 -- Config for: inc-rename.nvim
 time([[Config for inc-rename.nvim]], true)
 try_loadstring("\27LJ\2\nŠ\1\0\0\4\1\a\0\0176\0\0\0006\2\1\0'\3\2\0B\0\3\0037\1\2\0.\0\0\0-\0\0\0\14\0\0\0X\0\1€K\0\1\0006\0\2\0009\0\3\0005\2\5\0005\3\4\0=\3\6\2B\0\2\1K\0\1\0\0\0\fkeymaps\1\0\1\fkeymaps\0\1\4\0\0\6i\6n\6x\nsetup\15inc_rename\frequire\npcall\0", "config", "inc-rename.nvim")
 time([[Config for inc-rename.nvim]], false)
+-- Config for: nvim-cmp
+time([[Config for nvim-cmp]], true)
+try_loadstring("\27LJ\2\n-\0\1\4\1\2\0\5-\1\0\0009\1\0\0019\3\1\0B\1\2\1K\0\1\0\1À\tbody\15lsp_expand˜\4\1\0\v\0\29\00096\0\0\0'\2\1\0B\0\2\0026\1\0\0'\3\2\0B\1\2\0029\2\3\0005\4\a\0005\5\5\0003\6\4\0=\6\6\5=\5\b\0049\5\t\0009\5\n\0059\5\v\0055\a\r\0009\b\t\0009\b\f\b)\nüÿB\b\2\2=\b\14\a9\b\t\0009\b\f\b)\n\4\0B\b\2\2=\b\15\a9\b\t\0009\b\16\bB\b\1\2=\b\17\a9\b\t\0009\b\18\bB\b\1\2=\b\19\a9\b\t\0009\b\20\b5\n\21\0B\b\2\2=\b\22\aB\5\2\2=\5\t\0049\5\23\0009\5\24\0054\a\5\0005\b\25\0>\b\1\a5\b\26\0>\b\2\a5\b\27\0>\b\3\a5\b\28\0>\b\4\aB\5\2\2=\5\24\4B\2\2\0012\0\0€K\0\1\0\1\0\1\tname\tpath\1\0\1\tname\vbuffer\1\0\1\tname\fluasnip\1\0\1\tname\rnvim_lsp\fsources\vconfig\t<CR>\1\0\1\vselect\2\fconfirm\n<C-e>\nabort\14<C-Space>\rcomplete\n<C-f>\n<C-b>\1\0\5\n<C-b>\0\t<CR>\0\n<C-e>\0\14<C-Space>\0\n<C-f>\0\16scroll_docs\vinsert\vpreset\fmapping\fsnippet\1\0\3\fsources\0\fsnippet\0\fmapping\0\vexpand\1\0\1\vexpand\0\0\nsetup\fluasnip\bcmp\frequire\0", "config", "nvim-cmp")
+time([[Config for nvim-cmp]], false)
+-- Config for: nvim-notify
+time([[Config for nvim-notify]], true)
+try_loadstring("\27LJ\2\nw\0\0\4\0\5\0\f6\0\0\0006\1\2\0'\3\1\0B\1\2\2=\1\1\0006\0\2\0'\2\1\0B\0\2\0029\0\3\0005\2\4\0B\0\2\1K\0\1\0\1\0\3\ftimeout\3¸\23\15max_height\3\20\14max_width\3P\nsetup\frequire\vnotify\bvim\0", "config", "nvim-notify")
+time([[Config for nvim-notify]], false)
 -- Config for: mason.nvim
 time([[Config for mason.nvim]], true)
 try_loadstring("\27LJ\2\n3\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\nmason\frequire\0", "config", "mason.nvim")
@@ -223,15 +240,73 @@ time([[Sequenced loading]], true)
 vim.cmd [[ packadd mason-lspconfig.nvim ]]
 
 -- Config for: mason-lspconfig.nvim
-try_loadstring("\27LJ\2\n“\2\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\21ensure_installed\1\0\2\27automatic_installation\2\21ensure_installed\0\1\15\0\0\vlua_ls\fpyright\nts_ls\thtml\ncssls\vjsonls\18rust_analyzer\vyamlls\rdockerls$docker_compose_language_service\nvimls\vbashls\veslint\19markdown_oxide\nsetup\20mason-lspconfig\frequire\0", "config", "mason-lspconfig.nvim")
+try_loadstring("\27LJ\2\n“\2\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\21ensure_installed\1\0\2\21ensure_installed\0\27automatic_installation\2\1\15\0\0\vlua_ls\fpyright\nts_ls\thtml\ncssls\vjsonls\18rust_analyzer\vyamlls\rdockerls$docker_compose_language_service\nvimls\vbashls\veslint\19markdown_oxide\nsetup\20mason-lspconfig\frequire\0", "config", "mason-lspconfig.nvim")
 
 time([[Sequenced loading]], false)
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Filetype lazy-loads
 time([[Defining lazy-load filetype autocommands]], true)
-vim.cmd [[au FileType markdown ++once lua require("packer.load")({'markdown-preview.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
+vim.cmd [[au FileType vue ++once lua require("packer.load")({'vim-prettier'}, { ft = "vue" }, _G.packer_plugins)]]
+vim.cmd [[au FileType yaml ++once lua require("packer.load")({'vim-prettier'}, { ft = "yaml" }, _G.packer_plugins)]]
+vim.cmd [[au FileType html ++once lua require("packer.load")({'vim-prettier'}, { ft = "html" }, _G.packer_plugins)]]
+vim.cmd [[au FileType markdown ++once lua require("packer.load")({'vim-prettier', 'markdown-preview.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
+vim.cmd [[au FileType javascript ++once lua require("packer.load")({'vim-prettier'}, { ft = "javascript" }, _G.packer_plugins)]]
+vim.cmd [[au FileType typescript ++once lua require("packer.load")({'vim-prettier'}, { ft = "typescript" }, _G.packer_plugins)]]
+vim.cmd [[au FileType scss ++once lua require("packer.load")({'vim-prettier'}, { ft = "scss" }, _G.packer_plugins)]]
+vim.cmd [[au FileType css ++once lua require("packer.load")({'vim-prettier'}, { ft = "css" }, _G.packer_plugins)]]
+vim.cmd [[au FileType json ++once lua require("packer.load")({'vim-prettier'}, { ft = "json" }, _G.packer_plugins)]]
 time([[Defining lazy-load filetype autocommands]], false)
+vim.cmd("augroup END")
+vim.cmd [[augroup filetypedetect]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\css.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\css.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\css.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\graphql.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\graphql.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\graphql.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\html.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\html.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\html.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\javascript.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\javascript.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\javascript.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\json.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\json.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\json.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\less.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\less.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\less.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\lua.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\lua.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\lua.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\markdown.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\markdown.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\markdown.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\php.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\php.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\php.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\ruby.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\ruby.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\ruby.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\scss.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\scss.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\scss.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\svelte.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\svelte.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\svelte.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\typescript.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\typescript.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\typescript.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\vue.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\vue.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\vue.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\xml.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\xml.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\xml.vim]], false)
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\yaml.vim]], true)
+vim.cmd [[source C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\yaml.vim]]
+time([[Sourcing ftdetect script at: C:\Users\HP\AppData\Local\nvim-data\site\pack\packer\opt\vim-prettier\ftdetect\yaml.vim]], false)
 vim.cmd("augroup END")
 
 _G._packer.inside_compile = false
