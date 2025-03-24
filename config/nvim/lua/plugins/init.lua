@@ -191,14 +191,7 @@ return require('packer').startup(function(use)
 
 
     -- ### ---------------------------------------------------- ###
-    
-    -- prettier linting
 
-    use {
-        'prettier/vim-prettier',
-        run = 'yarn install',
-        ft = { 'javascript', 'typescript', 'css', 'scss', 'json', 'html', 'vue', 'yaml', 'markdown' }
-    }
 
 
 

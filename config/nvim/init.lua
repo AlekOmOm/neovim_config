@@ -1,5 +1,7 @@
 -- ~/.config/nvim/init.lua
 
+
+-- Fix Windows path handling
 --- @type table
 vim = vim
 
@@ -46,8 +48,6 @@ end
 --------------------------------------------------------------------------------
 --- Handle command-line arguments
 
--- Add this to your init.lua file after the packer bootstrap section
-
 -- Handle command-line arguments
 local function handle_args()
   local args = vim.v.argv
@@ -92,8 +92,6 @@ end
 
 -- Run the argument handler
 handle_args()
-
-
 
 
 
@@ -285,10 +283,12 @@ local function setup_lsp()
 end
 
 -- Set higher log level for debugging
-vim.lsp.set_log_level("debug")
+vim.lsp.set_log_level("ERROR")
+
+-- Disable built-in LSP clients
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 -- Run the direct LSP setup function
 setup_lsp()
 
--- Print status message
--- print("Direct LSP configuration loaded. Try opening a Python file and check with :LspInfo")

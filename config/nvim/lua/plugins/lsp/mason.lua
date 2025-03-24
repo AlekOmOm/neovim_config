@@ -8,7 +8,7 @@ function M.setup()
     vim.notify("mason not found!", "error")
     return 
   end
-  
+
   local status_ok_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
   if not status_ok_lspconfig then 
     vim.notify("mason-lspconfig not found!", "error")
@@ -17,7 +17,7 @@ function M.setup()
 
   -- Detect platform
   local is_windows = vim.fn.has('win32') == 1
-  
+
   -- Mason setup
   mason.setup({
     ui = {
@@ -33,7 +33,7 @@ function M.setup()
     install_root_dir = vim.fn.stdpath("data") .. "/mason",
     PATH = "prepend"
   })
-  
+
   -- Server lists - note the correct names
   local servers = {
     -- web servers
@@ -45,12 +45,12 @@ function M.setup()
     -- config servers
     "yamlls", "vimls"
   }
-  
+
   mason_lspconfig.setup({
     ensure_installed = servers,
     automatic_installation = true,
   })
-  
+
   -- Print debug info about Mason installation
   vim.defer_fn(function()
     vim.notify("Mason path: " .. vim.fn.stdpath("data") .. "/mason/bin", "info")

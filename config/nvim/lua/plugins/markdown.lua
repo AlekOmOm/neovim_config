@@ -8,10 +8,13 @@ function M.setup()
     vim.g.mkdp_refresh_slow = 0
     vim.g.mkdp_command_for_global = 0
     vim.g.mkdp_open_to_the_world = 0
-    vim.g.mkdp_browser = ""  -- Use default browser
+    -- edge browser
+    vim.g.mkdp_browser = "edge"
+    -- auto refresh 
+    vim.g.mkdp_refresh_on_save = 1
     vim.g.mkdp_echo_preview_url = 1
-    vim.g.mkdp_theme = {"default", "github_dark"}
-    vim.g.mkdp_port = 8888
+    vim.g.mkdp_theme = {"default", "github_light_default"}
+    vim.g.mkdp_port = 0
     vim.g.mkdp_preview_options = {
         mkit = {},
         katex = {},
@@ -23,7 +26,12 @@ function M.setup()
         flowchart_diagrams = {},
         content_editable = false,
         disable_filename = 0,
+
     }
+    -- debug prints:
+    print("Browser set to: " .. vim.g.mkdp_browser)
+    print("Auto refresh on save: " .. vim.g.mkdp_refresh_on_save)
+    print("Echo preview url: " .. vim.g.mkdp_echo_preview_url)
 
     -- Emoji substitution for markdown files
     vim.api.nvim_create_autocmd("FileType", {
@@ -43,8 +51,6 @@ function M.setup()
             -- Add command to list all available emojis
             vim.api.nvim_buf_create_user_command(0, "EmojiList", function()
                 vim.cmd('split __Emoji_List__')
-                vim.api.nvim_buf_set_option(0, 'buftype', 'nofile')
-                vim.api.nvim_buf_set_option(0, 'swapfile', false)
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
 
                 local emoji_list = vim.fn['emoji#list']()

@@ -57,12 +57,12 @@ function M.setup()
     else
       vim.notify("Failed to setup LSP servers", "error")
     end
-    
+
     -- Setup debug commands
     pcall(function()
       require('plugins.lsp.commands').setup()
     end)
-    
+
   end, 500)
 end
 
