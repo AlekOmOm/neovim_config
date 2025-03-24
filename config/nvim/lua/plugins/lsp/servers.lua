@@ -3,6 +3,9 @@
 local M = {}
 
 function M.setup(opts)
+
+    vim.defer_fn(function()
+
     -- Get lspconfig
     local status_ok, lspconfig = pcall(require, "lspconfig")
     if not status_ok then
@@ -89,16 +92,16 @@ function M.setup(opts)
         'html', 'cssls', 'jsonls', 'bashls', 'dockerls',
         'docker_compose_language_service', 'tsserver', 'yamlls', 'vimls'
     }
-    
+
     -- Setup servers with special configs
     for server_name, config in pairs(server_configs) do
         config.on_attach = opts.on_attach
         config.capabilities = opts.capabilities
-        
+
         lspconfig[server_name].setup(config)
         vim.notify("Configured LSP: " .. server_name, "info")
     end
-    
+
     -- Setup servers without special configs
     for _, server in ipairs(simple_servers) do
         lspconfig[server].setup({
@@ -108,6 +111,8 @@ function M.setup(opts)
         })
         vim.notify("Configured LSP: " .. server, "info")
     end
+
+    end, 100)
 end
 
 return M

@@ -48,12 +48,3 @@ vim.opt.foldlevelstart = 99    -- Start with all folds open
 vim.opt.foldenable = true      -- Enable folding
 
 
--- Set UTF-8 encoding explicitly
-vim.opt.fileencoding = "utf-8"
-
--- Set locale-related environment variables
-if vim.fn.has('win32') == 1 then
-    -- Set environment variables for Windows
-    vim.env.LANG = "en_US.UTF-8"
-    vim.env.LC_CTYPE = "en_US.UTF-8"
-end

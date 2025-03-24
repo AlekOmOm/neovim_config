@@ -66,4 +66,6 @@ function M.setup()
   end, 500)
 end
 
+vim.g.lsp_initialized = true
+
 return M

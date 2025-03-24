@@ -174,4 +174,34 @@ function M.verify_mason()
     vim.notify(output, 1)
 end
 
+vim.api.nvim_create_user_command('LspDiag', function()
+  local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/"
+  local files = vim.fn.glob(mason_bin .. "*", false, true)
+  
+  -- Check Mason executables
+  print("Mason bin contents:")
+  for _, file in ipairs(files) do
+    print("  - " .. file)
+  end
+  
+  -- Check LSP server paths
+  print("\nChecking server executables:")
+  local servers = {'pyright', 'lua_ls', 'tsserver', 'rust_analyzer'}
+  for _, server in ipairs(servers) do
+    local mapping = {
+      ["pyright"] = "pyright-langserver",
+      ["lua_ls"] = "lua-language-server",
+      ["tsserver"] = "typescript-language-server",
+      ["rust_analyzer"] = "rust-analyzer"
+    }
+    local base_name = mapping[server] or server
+    local is_windows = vim.fn.has('win32') == 1
+    local exe_name = is_windows and base_name .. ".cmd" or base_name
+    local path = mason_bin .. exe_name
+    
+    local exists = vim.fn.filereadable(path) == 1
+    print(string.format("  - %s: %s (%s)", server, path, exists and "exists" or "missing"))
+  end
+end, {})
+
 return M

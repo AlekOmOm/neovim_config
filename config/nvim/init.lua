@@ -5,6 +5,11 @@
 --- @type table
 vim = vim
 
+-- locale 
+if vim.fn.has('win32') == 1 then
+  vim.cmd('language en_US.UTF-8')
+end
+
 -- Bootstrap packer first
 local ensure_packer = function()
     local fn = vim.fn
@@ -131,9 +136,13 @@ end
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
---- Direct LSP configuration
+--- init LSP configuration
 
 local function setup_lsp()
+
+  if vim.g.lsp_initialized then
+    return
+  end
 
   -- Platform detection - ensure no .cmd is used on Linux
   local is_windows = vim.fn.has('win32') == 1
@@ -282,6 +291,10 @@ local function setup_lsp()
   end, {})
 end
 
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--- Debug and Diagnostic settings
+
 -- Set higher log level for debugging
 vim.lsp.set_log_level("ERROR")
 
@@ -289,6 +302,27 @@ vim.lsp.set_log_level("ERROR")
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
--- Run the direct LSP setup function
+
+vim.api.nvim_create_user_command('LspDebugPath', function()
+  local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/"
+  local files = vim.fn.glob(mason_bin .. "*", false, true)
+  print("Mason bin contents:")
+  for _, file in ipairs(files) do
+    print("  - " .. file)
+  end
+end, {})
+
+
+
+
+
+
+
+
+
+
+
+
+-- Run the init LSP setup function
 setup_lsp()
 
