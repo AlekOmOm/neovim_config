@@ -9,11 +9,11 @@ function M.setup()
     vim.g.mkdp_command_for_global = 0
     vim.g.mkdp_open_to_the_world = 0
     -- edge browser
-    vim.g.mkdp_browser = "edge"
+    vim.g.mkdp_browser = ""
     -- auto refresh 
     vim.g.mkdp_refresh_on_save = 1
     vim.g.mkdp_echo_preview_url = 1
-    vim.g.mkdp_theme = {"default", "github_light_default"}
+    vim.g.mkdp_theme = {"github_light_default"}
     vim.g.mkdp_port = 0
     vim.g.mkdp_preview_options = {
         mkit = {},
@@ -28,10 +28,6 @@ function M.setup()
         disable_filename = 0,
 
     }
-    -- debug prints:
-    print("Browser set to: " .. vim.g.mkdp_browser)
-    print("Auto refresh on save: " .. vim.g.mkdp_refresh_on_save)
-    print("Echo preview url: " .. vim.g.mkdp_echo_preview_url)
 
     -- Emoji substitution for markdown files
     vim.api.nvim_create_autocmd("FileType", {

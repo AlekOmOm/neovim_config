@@ -180,14 +180,12 @@ return require('packer').startup(function(use)
         use({
           "iamcco/markdown-preview.nvim",
           run = "cd app && npm install",
-          setup = function() 
-            vim.g.mkdp_filetypes = { "markdown" }
+          setup = function()
+              require('plugins.markdown').setup()
           end,
           ft = { "markdown" },
         })
 
-        -- Markdown emoji 
-        use 'junegunn/vim-emoji'        -- general emoji support
 
 
     -- ### ---------------------------------------------------- ###
