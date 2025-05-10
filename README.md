@@ -1,275 +1,117 @@
-# Neovim Configuration Guide
+# Neovim Configuration
 
-This guide provides a comprehensive overview of a personal Neovim configuration focused on development efficiency, LSP integration, and quality-of-life improvements.
+This repository contains a cross-platform Neovim configuration designed to work seamlessly across Windows, macOS, and Linux environments.
 
-## Table of Contents
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Directory Structure](#directory-structure)
-- [Key Features](#key-features)
-- [Core Configuration](#core-configuration)
-- [Language Server Protocol (LSP)](#language-server-protocol-lsp)
-- [Plugin Overview](#plugin-overview)
-- [Platform-Specific Considerations](#platform-specific-considerations)
-- [Key Commands & Shortcuts](#key-commands--shortcuts)
-- [Utils: New Files with Directory Creation](#utils-new-files-with-directory-creation)
-- [Troubleshooting](#troubleshooting)
+## Path Handling in Neovim Configuration
 
-## Requirements
+### Packer Compiled Output
 
-- **Neovim >= 0.9.0** (critical requirement)
-- For Debian stable users, installation from source is required:
-  ```bash
-  # Install build dependencies
-  sudo apt-get install ninja-build gettext cmake unzip curl
+The configuration uses [packer.nvim](https://github.com/wbthomason/packer.nvim) for plugin management. One key aspect of ensuring cross-platform compatibility is handling the `packer_compiled.lua` file correctly.
 
-  # Build from source
-  cd ~
-  mkdir neovim-source && cd neovim-source
-  git clone https://github.com/neovim/neovim
-  cd neovim
-  git checkout stable
-  make CMAKE_BUILD_TYPE=RelWithDebInfo
-  sudo make install
-  ```
+#### Important Notes
 
-## Installation
+1. **System-Specific Paths**: The `packer_compiled.lua` file contains system-specific paths that should not be committed to version control.
+   - It is already added to `.gitignore` to prevent committing system-specific compiled files.
+   - Patterns added: `packer_compiled.lua` and `**/plugin/packer_compiled.lua`
 
-### Option 1: Git Clone and Script
-```bash
-# Clone the repository
-git clone git@github.com:AlekOmOm/neovim_config.git
-
-# Run initialization script
-./init_scripts/sync_nvim.sh
-```
-
-### Option 2: Manual Setup
-1. Clone packer.nvim:
-   ```bash
-   git clone --depth 1 https://github.com/wbthomason/packer.nvim \
-     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+2. **Path Resolution**: The Packer configuration in `lua/plugins/init.lua` uses system-agnostic path handling:
+   ```lua
+   config = {
+       compile_path = paths.join(vim.fn.stdpath('config'), 'plugin', 'packer_compiled.lua'),
+       package_root = paths.join(vim.fn.stdpath('data'), 'site', 'pack'),
+       -- other configuration options...
+   }
    ```
-2. Copy or symlink configurations to `~/.config/nvim/`
-3. Start nvim and run `:PackerSync` to install plugins
-4. Run `:Mason` to install language servers
 
-## Directory Structure
+3. **Neovim Standard Paths**: The configuration uses Neovim's standard path functions:
+   - `vim.fn.stdpath('config')`: For configuration files
+   - `vim.fn.stdpath('data')`: For data files
+   - The `paths` utility module (`lua/utils/paths.lua`) provides cross-platform path handling
 
-```
-~/.config/nvim/
-├── init.lua                 # Main entry point
-├── lua/
-│   ├── core/               # Core vim settings
-│   │   ├── init.lua        # Loads all core modules
-│   │   ├── options.lua     # Vim options
-│   │   ├── keymaps.lua     # Key mappings
-│   │   └── autocmds.lua    # Autocommands
-│   │
-│   ├── plugins/            # Plugin configurations
-│   │   ├── init.lua        # Plugin loader (packer)
-│   │   ├── setup.lua       # Plugin setup orchestrator
-│   │   ├── lsp/           # LSP configurations
-│   │   │   ├── init.lua   # LSP loader
-│   │   │   ├── servers.lua # Server configs
-│   │   │   └── mason.lua  # Mason setup
-│   │   │
-│   │   ├── completion.lua  # Completion (nvim-cmp)
-│   │   ├── copilot.lua     # GitHub Copilot config
-│   │   ├── telescope.lua   # Telescope setup
-│   │   ├── treesitter.lua  # Treesitter config
-│   │   └── theme.lua       # Theme settings
-│   │
-│   └── utils/              # Utility functions
-       ├── init.lua         # Utils loader
-       └── init_file.lua    # File/directory creation
-```
+4. **First-Time Setup**: When setting up on a new system:
+   - Run `:PackerSync` to install plugins and generate a new `packer_compiled.lua` file for your system
+   - This will create the file in the correct location with proper paths for your system
 
-## Key Features
+5. **Multiple Neovim Configurations**: If you use multiple Neovim configurations:
+   - Be aware that `vim.fn.stdpath('config')` points to your primary Neovim configuration directory
+   - For development/testing of this configuration, consider using environment variables to override paths
 
-1. **Core Settings**
-   - Line numbers (relative + absolute)
-   - 4-space indentation with autoindent
-   - Spacebar as leader key
-   - Language-aware file execution (F5)
+## Cross-Platform Compatibility
 
-2. **LSP Integration**
-   - Support for multiple languages (Python, Rust, TypeScript, etc.)
-   - Cross-platform compatibility (Windows/Linux)
-   - Diagnostic commands and debugging tools
+This configuration uses several techniques to ensure cross-platform compatibility:
 
-3. **Code Completion**
-   - nvim-cmp integration
-   - GitHub Copilot with custom keybindings
+1. **Path Separator Handling**: The `paths.path_sep` variable is set based on the operating system to use the correct path separator (`\` for Windows, `/` for Unix-like systems).
 
-4. **Refactoring Tools**
-   - Variable renaming
-   - Code extraction
-   - File extraction
+2. **Path Joining**: The `paths.join()` function is used to construct paths with the correct separator for the current system.
 
-5. **File Navigation**
-   - Telescope integration for fuzzy-finding
-   - Buffer management
+3. **System Detection**: The configuration detects the operating system using `vim.loop.os_uname().sysname` to apply system-specific settings when necessary.
 
-6. **Utilities**
-   - File/directory creation via command-line argument `-i`
-   - Automatic directory creation when saving
+4. **LSP Executable Names**: For language servers, the configuration handles the `.cmd` extension for Windows executables.
 
-## Core Configuration
+5. **System-Specific Configuration**: The `lua/core/system_specific.lua` module provides hostname and OS detection to apply machine-specific settings. Configuration modules in `lua/conf/machines/` are loaded based on hostname.
 
-### Editor Options (`options.lua`)
-- System clipboard integration
-- UTF-8 encoding
-- Relative line numbers (improves movement efficiency)
-- Syntax-based folding
-- Hidden buffers (background files)
+## System-Specific Configuration
 
-### Key Mappings (`keymaps.lua`)
-- Telescope: `<leader>ff` for files, `<leader>fg` for git files
-- Refactoring: `<leader>rn` for rename, `<leader>re` for extract
-- Markdown: `<leader>mp` for preview, `<leader>ms` for compile
+The configuration includes a system for applying different settings based on the machine's hostname or operating system:
 
-### Auto Commands (`autocmds.lua`)
-- Language-specific run commands mapped to F5
-- Automatic directory creation when saving files to non-existent paths
+1. **Hostname Detection**: Automatically detects the current machine and applies appropriate settings.
+   - Specifically configured for known machines like main laptop and stationary desktop
+   - Can be extended for additional machines by creating new configuration files
 
-## Language Server Protocol (LSP)
+2. **OS Detection**: Detects Windows, Linux, and macOS to apply OS-specific settings.
 
-### Configuration Architecture
-The LSP setup uses a layered approach:
-1. **Mason** (`mason.lua`) - Package manager for LSP servers
-2. **Server Configuration** (`servers.lua`) - Language-specific settings
-3. **Core Setup** (`init.lua`) - Attaches LSP to buffers, sets keymaps
+3. **Testing System**: A testing utility allows simulating different environments:
+   ```lua
+   :luafile lua/core/test_system_specific.lua
+   ```
 
-### Supported Languages
-- Python (pyright)
-- Lua (lua_ls)
-- TypeScript/JavaScript (tsserver)
-- HTML/CSS/JSON
-- Rust (with clippy integration)
-- Docker and Compose files
-- YAML, Bash
+4. **Override for Testing**: You can force a specific configuration by setting an override:
+   ```lua
+   -- Add to init.lua before the system_specific module is loaded
+   vim.g.system_override = { hostname = "DESKTOP-19QVLUP" }
+   ```
 
-### Debugging Tools
-- `:LspInfo` - Shows active LSP clients
-- `:LspLog` - Opens LSP log file
-- `:LspStart <server>` - Manually starts a server
-- `:LspCheck` - Verifies Mason installations
-- `:LspRestart` - Restarts all LSP clients
-- `:LspDebug` - Sets LSP log level to DEBUG
+## External Dependencies
 
-## Plugin Overview
+This Neovim configuration relies on several external tools and programs to provide its full range of features, including LSP servers, linters, formatters, and plugin-specific functionality.
 
-### Plugin Manager
-- [packer.nvim](https://github.com/wbthomason/packer.nvim) for plugin management
+For a detailed list of required dependencies, their versions, installation instructions, and troubleshooting tips, please refer to the [DEPENDENCIES.md](DEPENDENCIES.md) file.
 
-### Essential Plugins
-- **LSP**: nvim-lspconfig, mason.nvim, mason-lspconfig.nvim
-- **Completion**: nvim-cmp, LuaSnip
-- **Navigation**: Telescope
-- **Syntax**: Treesitter
-- **AI**: GitHub Copilot
-- **Git**: vim-fugitive
-- **Markdown**: markdown-preview.nvim (browser-based previewing)
-- **Refactoring**: refactoring.nvim, inc-rename.nvim
+### Automatic Dependency Checking
 
-### Theme
-- GitHub Dark theme with black background override
-- True colors enabled
+To help manage these external requirements, the configuration includes an automatic dependency checker that runs when Neovim starts (once integrated into the startup sequence). This checker will notify you of:
 
-## Platform-Specific Considerations
+- Missing critical executables (e.g., `git`, `node`, `python`, a C compiler).
+- Executables that are found but whose versions are below the recommended minimum.
+- Issues with underlying dependencies for Language Servers managed by Mason.
 
-### Windows Support
-- Automatically detects Windows and adjusts:
-  - Uses `.cmd` extensions for LSP executables
-  - Sets appropriate environment variables
-  - Adjusts path handling
+The notifications will attempt to guide you on how to resolve these issues, often by referring you to the `DEPENDENCIES.md` document.
 
-### Cross-Platform Compatibility
-- Helper functions for executable resolution
-- Platform-specific path handling
-- UTF-8 encoding enforcement
-
-## Key Commands & Shortcuts
-
-### Basic Movement
-```
-h, j, k, l       left, down, up, right
-gg               beginning of file
-G                end of file
-0, $             move to start / end of line
-w, b             beginning of next / prev word
-```
-
-### Insertion
-```
-i, I             enter insert at cursor / beginning of line
-a, A             enter insert after cursor / end of the line
-o, O             insert a new line below / above current
-dd, yy           delete / copy (yank) current line
-p, P             paste after / before cursor
-u, ctrl+r        undo / redo the last undone change
-```
-
-### Search & Replace
-```
-/text, ?text     search forward / backward for "text"
-n, N             repeat the last search forward / backward
-:%s/old/new/g    replace all occurrences of "old" with "new"
-:%s/old/new/gc   replace all occurrences with confirmation
-```
-
-### Running Code
-```
-F5               run current file (auto-detects language)
-:split | terminal open terminal in split window
-:!command         run any shell command
-```
-
-### Copilot
-```
-<C-J>            accept suggestion
-<C-K>            next suggestion
-<C-L>            previous suggestion
-<C-H>            dismiss suggestion
-<A-J>            accept word (partial completion)
-<A-L>            accept line (partial completion)
-:CopilotToggle   toggle Copilot on/off
-```
-
-## Utils: New Files with Directory Creation
-
-### Using the `-i` Flag
-Create new files with full directory paths:
-
-```bash
-nvim -i src/vector_db/__init__.py
-```
-
-This will:
-1. Create all necessary directories (e.g., `src/vector_db/`)
-2. Create an empty file (`__init__.py`)
-3. Exit vim immediately on success
-
-### Implementation
-The feature is implemented in two places:
-1. Command-line argument handler in `init.lua`
-2. Utility function in `utils/init_file.lua`
+If you prefer to manage dependencies manually or encounter issues with the automatic checker, you can always refer to `DEPENDENCIES.md` for manual installation guidance.
 
 ## Troubleshooting
 
-### LSP Issues
-1. Check if the server is installed: `:Mason`
-2. Verify server configuration: `:LspInfo`
-3. Check the logs: `:LspLog`
-4. Restart the server: `:LspRestart`
+If you encounter path-related issues:
 
-### Plugin Problems
-1. Update plugins: `:PackerSync`
-2. Check for errors: `:messages`
-3. Try clean installation: remove `~/.local/share/nvim/site/pack/packer/`
+1. **Check Packer Compiled Path**: Verify where `packer_compiled.lua` is being generated:
+   ```lua
+   :lua print(require('packer.config').options.compile_path)
+   ```
 
-### Cross-Platform Issues
-- Windows users may need to adjust path separators
-- Ensure correct permissions on Unix systems
-- Check if `.cmd` extensions are properly handled
+2. **Check Neovim Standard Paths**: Verify the paths Neovim is using:
+   ```lua
+   :lua print(vim.fn.stdpath('config'))
+   :lua print(vim.fn.stdpath('data'))
+   ```
+
+3. **Regenerate Packer Compiled File**: If you encounter issues, try regenerating the file:
+   ```
+   :PackerClean
+   :PackerSync
+   ```
+
+4. **Path Utility Functions**: Check that the path utility is working correctly:
+   ```lua
+   :lua print(require('utils.paths').path_sep)
+   :lua print(require('utils.paths').join(vim.fn.stdpath('config'), 'plugin'))
+   ``` 
