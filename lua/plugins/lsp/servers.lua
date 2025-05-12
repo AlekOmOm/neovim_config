@@ -16,8 +16,8 @@ function M.setup(opts)
     end
 
     -- Get Mason path
-    -- local mason_path = vim.fn.stdpath("data") .. "/mason"
-    -- local mason_bin = mason_path .. "/bin/"
+   local mason_path = vim.fn.stdpath("data") .. "/mason"
+   local mason_bin = mason_path .. "/bin/"
 
     -- Helper to get the correct executable path
    local function get_mason_bin(server_name)
@@ -27,6 +27,8 @@ function M.setup(opts)
             ["pyright"] = is_windows and "pyright-langserver.cmd" or "pyright-langserver",
             ["lua_ls"] = is_windows and "lua-language-server.cmd" or "lua-language-server",
             ["ts_ls"] = is_windows and "typescript-language-server.cmd" or "typescript-language-server",
+            ["eslint"] = is_windows and "vscode-eslint-language-server.cmd" or "vscode-eslint-language-server",
+            ["eslint_d"] = is_windows and "vscode-eslint-language-server.cmd" or "vscode-eslint-language-server",
             ["html"] = is_windows and "vscode-html-language-server.cmd" or "vscode-html-language-server",
             ["cssls"] = is_windows and "vscode-css-language-server.cmd" or "vscode-css-language-server",
             ["jsonls"] = is_windows and "vscode-json-language-server.cmd" or "vscode-json-language-server",
