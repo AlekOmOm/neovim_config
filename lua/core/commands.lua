@@ -3,6 +3,9 @@
 -- Import the paths utility module
 local paths = require('utils.paths')
 
+-- esc to caps-lock
+
+
 -- Custom commands
 local function setup_commands()
   -- Command to create a new file and its directory structure
