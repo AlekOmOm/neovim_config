@@ -1,77 +1,54 @@
--- plugins/lsp/init.lua
+-- ~/.config/nvim/lua/plugins/lsp/init.lua
+-- minimal lsp bootstrap: one file, no external “servers.lua” needed
 local M = {}
 
--- Define on_attach and capabilities here
+-- ---------------------------------------------------------------------------
+-- common on_attach
+-- ---------------------------------------------------------------------------
 M.on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  local map = function(lhs, rhs) vim.keymap.set("n", lhs, rhs, { buffer = bufnr, noremap = true, silent = true }) end
 
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+  -- basic nav / help
+  map("gd", vim.lsp.buf.definition)
+  map("K",  vim.lsp.buf.hover)
+  map("gi", vim.lsp.buf.implementation)
+  map("<c-k>",     vim.lsp.buf.signature_help)
+  map("<leader>D", vim.lsp.buf.type_definition)
+  map("<leader>ca",vim.lsp.buf.code_action)
+  map("gr",         vim.lsp.buf.references)
+  map("<leader>f",  function() vim.lsp.buf.format { async = true } end)
 
-  -- Enable inlay hints if supported by the server
+  -- inlay hints (nvim 0.10+)
   if client.server_capabilities.inlayHintProvider then
     vim.lsp.inlay_hint.enable(bufnr, true)
-    vim.notify("Inlay hints enabled for " .. client.name, vim.log.levels.INFO, {title = "LSP"})
+    vim.notify("inlay hints: on (" .. client.name .. ")", vim.log.levels.INFO, { title = "lsp" })
   end
-
-  -- Notify when an LSP attaches to a buffer
-    vim.defer_fn(function()
-      vim.notify("LSP " .. client.name .. " attached to buffer " .. bufnr, vim.log.levels.INFO, {title = "LSP"})
-    end, 100)  -- Small delay to prevent overlapping
-
 end
 
--- Add capabilities for auto-completion
-M.capabilities = vim.lsp.protocol.make_client_capabilities()
-local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
-if has_cmp then
-    M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
-end
+-- ---------------------------------------------------------------------------
+-- capabilities (cmp aware)
+-- ---------------------------------------------------------------------------
+M.capabilities = vim.tbl_deep_extend(
+  "force",
+  vim.lsp.protocol.make_client_capabilities(),
+  (pcall(require, "cmp_nvim_lsp") and require("cmp_nvim_lsp").default_capabilities() or {})
+)
 
+-- ---------------------------------------------------------------------------
+-- top-level setup
+-- ---------------------------------------------------------------------------
 function M.setup()
-  -- Set LSP log level for better debugging
-  vim.lsp.set_log_level("info")
 
-  -- Load Mason configurations
-  local mason_setup_ok, _ = pcall(function()
-    require('plugins.lsp.mason').setup()
-  end)
+   require('plugins.lsp.mason').setup {
+    on_attach    = M.on_attach,
+    capabilities = M.capabilities,
+  }
 
-  if not mason_setup_ok then
-    vim.notify("Failed to setup Mason", "error")
-  end
-
-  -- Add a delay to ensure Mason registrations complete
-  vim.defer_fn(function()
-    -- Setup servers with common configurations
-    local servers_setup_ok, servers_setup = pcall(require, 'plugins.lsp.servers')
-    if servers_setup_ok then
-      servers_setup.setup({
-        on_attach = M.on_attach,
-        capabilities = M.capabilities
-      })
-    else
-      vim.notify("Failed to setup LSP servers", "error")
-    end
-
-    -- Setup debug commands
-    pcall(function()
-      require('plugins.lsp.commands').setup()
-    end)
-
-  end, 500)
+  -- extra user commands / debug helpers (optional)
+  pcall(function() require("plugins.lsp.commands").setup() end)
+  pcall(function() require("plugins.lsp.debug").setup()    end)
+  pcall(function() require("plugins.lsp.platform_fix").setup() end) -- if present
 end
-
-vim.g.lsp_initialized = true
 
 return M
+

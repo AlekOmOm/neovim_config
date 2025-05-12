@@ -1,0 +1,184 @@
+-- ~/.config/nvim/lua/plugins/lsp/mason.lua
+
+local M = {}
+local paths = require('utils.paths')
+
+function M.setup(opts)
+  local mason_ok, mason = pcall(require, "mason")
+  if not mason_ok then
+    vim.notify("mason not found!", "error")
+    return
+  end
+
+  local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+  if not mason_lspconfig_ok then
+    vim.notify("mason-lspconfig not found!", "error")
+    return
+  end
+
+  local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
+  if not lspconfig_ok then
+     vim.notify("lspconfig not found! Cannot configure servers.", "error")
+     return
+  end
+
+  -- Mason setup
+  mason.setup({
+    ui = {
+      border = "rounded",
+      icons = {
+        package_installed = "✓",
+        package_pending = "➜",
+        package_uninstalled = "✗",
+      },
+    },
+    max_concurrent_installers = 4,
+    install_root_dir = paths.join(vim.fn.stdpath("data"), "mason"),
+    PATH = "prepend", -- Make sure Mason's bin directory is preferred
+  })
+
+  -- List of servers Mason should ensure are installed
+  -- Use the names Mason knows (usually the same as lspconfig keys)
+  local ensure_installed = {
+    -- web servers
+    "html", "cssls", "typescript-language-server", "jsonls", -- Note: ts_ls might be typescript-language-server
+    -- system servers
+    "dockerls", "docker_compose_language_service", "bashls",
+    -- programming servers
+    "pyright", "rust_analyzer", "lua_ls",
+    -- config servers
+    "yamlls", "vimls",
+    -- other
+    "markdown_oxide", -- Added from your servers.lua
+  }
+
+  -- Specific configurations for servers
+  local server_configs = {
+      lua_ls = {
+          settings = {
+              Lua = {
+                  diagnostics = {
+                      globals = { 'vim' }
+                  },
+                  workspace = {
+                      library = vim.api.nvim_get_runtime_file("", true),
+                      checkThirdParty = false,
+                  },
+                  telemetry = {
+                      enable = false,
+                  },
+              }
+          }
+      },
+      pyright = {
+          settings = {
+              python = {
+                  pythonPath = vim.env.NVIM_PYTHON_EXE and vim.env.NVIM_PYTHON_EXE ~= "" and vim.env.NVIM_PYTHON_EXE or "python",
+                  analysis = {
+                      typeCheckingMode = "basic",
+                      autoSearchPaths = true,
+                      diagnosticMode = "workspace",
+                      useLibraryCodeForTypes = true
+                  }
+              }
+          }
+      },
+      rust_analyzer = {
+          settings = {
+              ["rust-analyzer"] = {
+                  checkOnSave = {
+                      command = "clippy"
+                  }
+              }
+          }
+          -- If you need specific on_attach for rust, add it here
+          -- on_attach = function(client, bufnr)
+          --   opts.on_attach(client, bufnr) -- Call the general on_attach
+          --   -- Add rust-specific keymaps or settings here
+          -- end,
+      },
+      markdown_oxide = {
+          filetypes = { "markdown" },
+          root_dir = require("lspconfig").util.root_pattern(".git", ".obsidian", ".moxide.toml", "*.md"),
+          single_file_support = true,
+      },
+      -- Add configs for other servers here if needed
+      -- e.g., typescript-language-server might need specific settings
+      -- ["typescript-language-server"] = { ... }
+  }
+
+  -- Setup mason-lspconfig
+  mason_lspconfig.setup({
+    ensure_installed = ensure_installed,
+    automatic_installation = true, -- Automatically install missing servers
+
+    -- Handlers define how servers are set up by lspconfig
+    handlers = {
+      -- Default handler for servers that don't have specific configs below
+      function(server_name)
+        lspconfig[server_name].setup({
+          capabilities = opts.capabilities,
+          on_attach = opts.on_attach,
+          -- cmd = ... -- No need to set cmd, mason-lspconfig handles it!
+        })
+      end,
+
+      -- Custom handlers for servers with specific settings
+      -- These will override the default handler for the specified server_name
+      ["lua_ls"] = function()
+        lspconfig.lua_ls.setup(vim.tbl_deep_extend("force", {
+          capabilities = opts.capabilities,
+          on_attach = opts.on_attach,
+        }, server_configs.lua_ls)) -- Merge defaults with specific config
+      end,
+
+      ["pyright"] = function()
+         lspconfig.pyright.setup(vim.tbl_deep_extend("force", {
+            capabilities = opts.capabilities,
+            on_attach = opts.on_attach,
+         }, server_configs.pyright))
+      end,
+
+      ["rust_analyzer"] = function()
+         lspconfig.rust_analyzer.setup(vim.tbl_deep_extend("force", {
+            capabilities = opts.capabilities,
+            on_attach = opts.on_attach, -- Use default on_attach unless overridden in server_configs.rust_analyzer
+         }, server_configs.rust_analyzer))
+      end,
+
+      ["markdown_oxide"] = function()
+         lspconfig.markdown_oxide.setup(vim.tbl_deep_extend("force", {
+            capabilities = opts.capabilities,
+            on_attach = opts.on_attach,
+         }, server_configs.markdown_oxide))
+      end,
+
+      -- Make sure server name used here matches the key in lspconfig and ensure_installed
+      ["typescript-language-server"] = function()
+        lspconfig.tsserver.setup({ -- Note: lspconfig key is often 'tsserver' for typescript-language-server
+            capabilities = opts.capabilities,
+            on_attach = opts.on_attach,
+            -- Add any specific typescript settings here if needed
+            -- settings = { ... }
+        })
+      end,
+      -- Add more custom handlers here if other servers need specific setup options
+      -- ["yamlls"] = function() ... end,
+    },
+  })
+
+  -- Optional: Debug notification
+  vim.defer_fn(function()
+      local install_path = paths.join(vim.fn.stdpath("data"), "mason")
+      local bin_path = paths.join(install_path, "bin")
+      vim.notify("Mason configured. Install path: " .. install_path, "info")
+      -- You can check if the bin path exists or list files if needed for debugging
+      -- local handle = io.popen('ls "' .. bin_path .. '"') -- Adjust command for Windows if necessary ('dir')
+      -- local result = handle and handle:read("*a")
+      -- if result then vim.notify("Mason bin contents:\n" .. result, "info") else vim.notify("Could not list Mason bin: " .. bin_path, "warn") end
+      -- if handle then handle:close() end
+  end, 1000)
+
+end
+
+return M

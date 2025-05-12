@@ -1,64 +1,110 @@
 -- ~/.config/nvim/lua/plugins/lsp/mason.lua
 
 local M = {}
-local paths = require('utils.paths')
+local paths = require("utils.paths")
 
-function M.setup()
-  local status_ok, mason = pcall(require, "mason")
-  if not status_ok then 
-    vim.notify("mason not found!", "error")
-    return 
-  end
+-- pass { on_attach = …, capabilities = … } from your main lsp setup
+function M.setup(opts)
+  -- safety checks ------------------------------------------------------------
+  local ok, mason = pcall(require, "mason");              if not ok then vim.notify("mason not found!", "error"); return end
+  ok, mason_lspconfig  = pcall(require, "mason-lspconfig"); if not ok then vim.notify("mason-lspconfig not found!", "error"); return end
+  ok, lspconfig        = pcall(require, "lspconfig");       if not ok then vim.notify("lspconfig not found!", "error");       return end
 
-  local status_ok_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
-  if not status_ok_lspconfig then 
-    vim.notify("mason-lspconfig not found!", "error")
-    return 
-  end
-
-  -- Detect platform
-  local is_windows = vim.fn.has('win32') == 1
-
-  -- Mason setup
+  -- mason core ---------------------------------------------------------------
   mason.setup({
     ui = {
       border = "rounded",
-      icons = {
-        package_installed = "✓",
-        package_pending = "➜",
-        package_uninstalled = "✗"
-      }
+      icons  = { package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" },
     },
     max_concurrent_installers = 4,
-    -- Important for Windows: specify the correct path behavior
     install_root_dir = paths.join(vim.fn.stdpath("data"), "mason"),
-    PATH = "prepend"
+    PATH = "prepend",
   })
 
-  -- Server lists - note the correct names
-  local servers = {
-    -- web servers
+  -- servers to ensure --------------------------------------------------------
+  local ensure_installed = {
+    -- web
     "html", "cssls", "ts_ls", "jsonls",
-    -- system servers
+    -- system
     "dockerls", "docker_compose_language_service", "bashls",
-    -- programming servers
+    -- langs
     "pyright", "rust_analyzer", "lua_ls",
-    -- config servers
-    "yamlls", "vimls"
+    -- configs
+    "yamlls", "vimls",
+    -- misc
+    "markdown_oxide",
   }
 
+  -- per-server tweaks --------------------------------------------------------
+  local server_configs = {
+    lua_ls = {
+      settings = {
+        Lua = {
+          diagnostics = { globals = { "vim" } },
+          workspace   = { library = vim.api.nvim_get_runtime_file("", true), checkThirdParty = false },
+          telemetry   = { enable = false },
+        },
+      },
+    },
+
+    pyright = {
+      settings = {
+        python = {
+          analysis = {
+            typeCheckingMode    = "basic",
+            autoSearchPaths     = true,
+            diagnosticMode      = "workspace",
+            useLibraryCodeForTypes = true,
+          },
+        },
+      },
+    },
+
+    rust_analyzer = {
+      settings = { ["rust-analyzer"] = { checkOnSave = { command = "clippy" } } },
+    },
+
+    markdown_oxide = {
+      filetypes = { "markdown" },
+      root_dir  = lspconfig.util.root_pattern(".git", ".obsidian", ".moxide.toml"),
+      single_file_support = true,
+    },
+
+    ts_ls = { -- typescript-language-server :contentReference[oaicite:0]{index=0}
+      settings = {
+        -- put extra ts settings here if you need them
+      },
+    },
+  }
+
+  -- mason-lspconfig glue -----------------------------------------------------
   mason_lspconfig.setup({
-    ensure_installed = servers,
+    ensure_installed      = ensure_installed,
     automatic_installation = true,
+
+    handlers = {
+      function(server)
+        lspconfig[server].setup({
+          capabilities = opts.capabilities,
+          on_attach    = opts.on_attach,
+        })
+      end,
+    },
   })
 
-  -- Print debug info about Mason installation
+  -- apply per-server overrides ----------------------------------------------
+  for name, cfg in pairs(server_configs) do
+    lspconfig[name].setup(vim.tbl_deep_extend("force", {
+      capabilities = opts.capabilities,
+      on_attach    = opts.on_attach,
+    }, cfg))
+  end
+
+  -- optional debug -----------------------------------------------------------
   vim.defer_fn(function()
-    vim.notify("Mason path: " .. paths.join(vim.fn.stdpath("data"), "mason", "bin"), "info")
-    if is_windows then
-      vim.notify("Windows platform detected - using .cmd extensions", "info")
-    end
+    vim.notify("mason initialised ➜ " .. paths.join(vim.fn.stdpath("data"), "mason"), "info")
   end, 1000)
 end
 
 return M
+

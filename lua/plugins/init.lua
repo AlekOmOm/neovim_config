@@ -6,7 +6,6 @@ logger.info("plugins.init.lua: packer required")
 
 local paths = require('utils.paths')
 
--- require('impatient') -- <<<<< CRITICAL: Ensure this is commented out or removed
 
 logger.info("plugins.init.lua: proceeding with packer.startup")
 logger.debug("plugins.init.lua: Packer package_root will be based on vim.fn.stdpath('data'): " .. vim.inspect(vim.fn.stdpath('data')))
@@ -39,15 +38,14 @@ return packer.startup({
         ------------------------------------
 
         -- LSP Support
-
-        use 'neovim/nvim-lspconfig'
-        use {
-            'williamboman/mason.nvim',
-            config = function()
-
-                require('mason').setup()
-            end
-        }
+       use {
+         'williamboman/mason.nvim',
+         requires = { 'neovim/nvim-lspconfig' },
+         config = function()
+           -- configure mason core first
+           require('mason').setup()
+         end
+       }
 
         use {
             'williamboman/mason-lspconfig.nvim',
@@ -86,6 +84,14 @@ return packer.startup({
             end
         }
 
+
+        use {
+            'neovim/nvim-lspconfig',
+            after = { 'mason.nvim', 'mason-lspconfig.nvim' },
+            config = function()
+              require('plugins.lsp.init').setup()
+            end
+          }
 
         -- Completion
         use {
@@ -229,8 +235,8 @@ return packer.startup({
     end,
     config = {
         -- Use system-agnostic paths for packer compilation
-        compile_path = paths.join(vim.fn.getcwd(), 'plugin', 'packer_compiled.lua'),
-        package_root = paths.join(vim.fn.stdpath('data'), 'site', 'pack'),
+        compile_path = paths.join(paths.NVIM.PACKER.ROOT, 'plugin', 'packer_compiled.lua'),
+        package_root = paths.NVIM.PACKER.ROOT,
         display = {
             open_fn = function()
                 return require('packer.util').float({ border = 'rounded' })
