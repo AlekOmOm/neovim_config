@@ -235,8 +235,8 @@ return packer.startup({
     end,
     config = {
         -- Use system-agnostic paths for packer compilation
-        compile_path = paths.join(paths.NVIM.PACKER.ROOT, 'plugin', 'packer_compiled.lua'),
-        package_root = paths.NVIM.PACKER.ROOT,
+        compile_path = require('utils.paths').join(vim.fn.stdpath('data'), 'site', 'lua', 'packer_compiled.lua'),
+        package_root = paths.join(paths.NVIM.PACKER.ROOT, 'start'),
         display = {
             open_fn = function()
                 return require('packer.util').float({ border = 'rounded' })

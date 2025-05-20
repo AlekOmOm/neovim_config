@@ -2,6 +2,8 @@
 -- minimal lsp bootstrap: one file, no external “servers.lua” needed
 local M = {}
 
+local inlay = require('plugins.lsp.inlay_hints').setup()
+
 -- ---------------------------------------------------------------------------
 -- common on_attach
 -- ---------------------------------------------------------------------------
@@ -18,11 +20,8 @@ M.on_attach = function(client, bufnr)
   map("gr",         vim.lsp.buf.references)
   map("<leader>f",  function() vim.lsp.buf.format { async = true } end)
 
-  -- inlay hints (nvim 0.10+)
-  if client.server_capabilities.inlayHintProvider then
-    vim.lsp.inlay_hint.enable(bufnr, true)
-    vim.notify("inlay hints: on (" .. client.name .. ")", vim.log.levels.INFO, { title = "lsp" })
-  end
+  inlay.safe_enable_inlay_hints(client, bufnr)
+
 end
 
 -- ---------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 local M = {}
 local paths = require("utils.paths")
+local logger = require("utils.logger")
 
 -- pass { on_attach = …, capabilities = … } from your main lsp setup
 function M.setup(opts)
@@ -102,7 +103,8 @@ function M.setup(opts)
 
   -- optional debug -----------------------------------------------------------
   vim.defer_fn(function()
-    vim.notify("mason initialised ➜ " .. paths.join(vim.fn.stdpath("data"), "mason"), "info")
+
+     logger.info("mason initialised ➜ " .. paths.join(vim.fn.stdpath("data"), "mason"), "info")
   end, 1000)
 end
 

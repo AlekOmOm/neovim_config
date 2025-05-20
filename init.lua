@@ -24,6 +24,7 @@ local function ensure_packer()
   local install_path = paths.NVIM.PACKER.INSTALL          -- …/start/packer.nvim
   local start_dir    = paths.join(paths.NVIM.PACKER.ROOT, 'start')
 
+
   -- clone only if the directory is absent / empty
   if fn.empty(fn.glob(install_path)) > 0 then
     paths.ensure_dir(start_dir)                           -- mkdir -p …/start
@@ -55,7 +56,7 @@ if packer_boot then -- Packer was freshly installed
   end)
   logger.warn('packer.nvim installed. Please RESTART Neovim and then run :PackerSync') -- Changed to logger.warn
   vim.notify('packer.nvim installed. Please RESTART Neovim and then run :PackerSync', vim.log.levels.WARN)
-  return -- IMPORTANT: Exit config, force user to restart for plugins to load correctly
+  return
 end
 
 --- optional profiling ---------------------------------------------------------
@@ -169,6 +170,23 @@ local function setup_lsp()
 end
 setup_lsp()
 
+-- Load the compiled packer file if it exists
+local packer_compiled = vim.fn.stdpath('data') .. '/site/lua/packer_compiled.lua'
+if vim.fn.filereadable(packer_compiled) == 1 then
+  vim.cmd('luafile ' .. packer_compiled)
+end
+
+-- Add after setup_lsp() in init.lua
+vim.defer_fn(function()
+  -- Only try to initialize Mason directly if the command doesn't exist
+  if not vim.fn.exists(":Mason") then
+    local mason_direct_ok, mason_direct = pcall(require, 'plugins.mason_direct')
+    if mason_direct_ok and mason_direct.setup() then
+      vim.notify("Mason initialized via fallback", vim.log.levels.INFO)
+    end
+  end
+end, 200)  -- Small delay to ensure other initialization is complete
+
 --- misc debug helpers ---------------------------------------------------------
 vim.lsp.set_log_level('ERROR')
 _G.LspLog = function() vim.cmd('vsplit ' .. vim.lsp.get_log_path()) end
@@ -181,3 +199,77 @@ _G.LspDebugPath = function()
   local mason_bin = paths.join(paths.data_dir, 'mason', 'bin')
   for _, f in ipairs(fn.glob(paths.join(mason_bin, '*'), 0, 1)) do logger.debug('  - ' .. f) end -- Changed to logger.debug
 end
+
+
+-- Add near your debug helpers in init.lua
+_G.CheckMasonInstall = function()
+  local mason_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/mason.nvim'
+  if vim.fn.isdirectory(mason_path) == 1 then
+    print("Mason found at: " .. mason_path)
+  else
+    print("Mason NOT found at: " .. mason_path)
+    -- Check alternative locations
+    local alt_path = vim.fn.stdpath('data') .. '/site/pack/packer/opt/mason.nvim'
+    if vim.fn.isdirectory(alt_path) == 1 then
+      print("Mason found in opt directory")
+    end
+  end
+end
+
+-- shada cleanup of tmp files ------------------------------------------------
+-- shada cleanup of tmp files ------------------------------------------------
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    local paths = require('utils.paths')
+    
+    -- 1. locate nvim data dir - use state_dir where shada is stored, not data_dir
+    local state_dir = paths.state_dir
+    
+    -- 2. find all shada tmp files
+    local pattern = "*.shada.tmp.*"
+    local files = vim.fn.globpath(state_dir, pattern, 0, 1)
+
+    if #files == 0 then
+      return
+    end
+
+    local config_dir = paths.config_dir
+    local log_file = paths.join(config_dir, 'log.shada-cleanup.txt')
+
+    local file = io.open(log_file, 'a')
+    if file then
+      file:write(os.date("%Y-%m-%d %H:%M:%S") .. " Shada cleanup started\n")
+      file:write("State dir: " .. state_dir .. "\n")
+      file:write("Found " .. #files .. " temp files\n")
+      if #files > 0 then file:write("Files: " .. vim.inspect(files) .. "\n") end
+      file:close()
+    end
+
+    -- 3. delete each, logging both success and failures
+    local deleted = 0
+    for _, f in ipairs(files) do
+      local success = vim.fn.delete(f)
+      if success == 0 then
+        deleted = deleted + 1
+      else
+        vim.notify(
+          "Failed to delete shada tmp file: " .. f,
+          vim.log.levels.ERROR
+        )
+
+        file = io.open(log_file, 'a')
+        if file then
+          file:write("Error deleting: " .. f .. "\n")
+          file:close()
+        end
+      end
+    end
+
+    file = io.open(log_file, 'a')
+    if file then
+      file:write("Deleted " .. deleted .. "/" .. #files .. " temp files\n")
+      file:write("Cleanup finished\n\n")
+      file:close()
+    end
+  end,
+})
