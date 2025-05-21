@@ -174,23 +174,20 @@ local function setup_lsp()
       local root_dir = lspconfig.util.root_pattern(".git", "*.sln", "pyproject.toml", "package.json")
       
       -- Use vim.lsp.start if available (Neovim 0.8+)
+      -- Define common LSP setup configuration
+      local lsp_config = {
+        cmd  = {cmd, '--stdio'},
+        on_attach = on_attach,
+        capabilities = caps,
+        flags = {debounce_text_changes = 150},
+        root_dir = root_dir, -- Use consistent root_dir
+      }
+
       if vim.lsp.start then
-        lspconfig[name].setup {
-          cmd  = {cmd, '--stdio'},
-          on_attach = on_attach,
-          capabilities = caps,
-          flags = {debounce_text_changes = 150},
-          root_dir = root_dir, -- Use consistent root_dir
-        }
+        lspconfig[name].setup(lsp_config)
       else
         -- Fall back to deprecated method for older Neovim
-        lspconfig[name].setup {
-          cmd  = {cmd, '--stdio'},
-          on_attach = on_attach,
-          capabilities = caps,
-          flags = {debounce_text_changes = 150},
-          root_dir = root_dir, -- Same pattern for consistency
-        }
+        lspconfig[name].setup(lsp_config)
       end
     end
   end
