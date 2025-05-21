@@ -11,11 +11,21 @@ M.sensitive_patterns = {
 }
 
 -- List of allowed command prefixes for safe execution
+-- Initialize allowed commands with defaults
 M.allowed_commands = {
   "git", "nvim", "npm", "node", "python", "python3", "lua", "make", "gcc",
   "clang", "cp", "mv", "mkdir", "ls", "find", "grep", "sed", "awk"
 }
 
+-- Check for environment variable override
+local env_allowed_commands = os.getenv("NVIM_SECURITY_ALLOWED_COMMANDS")
+if env_allowed_commands then
+  -- Split the environment variable value into a table
+  M.allowed_commands = {}
+  for command in env_allowed_commands:gmatch("[^,]+") do
+    table.insert(M.allowed_commands, command:match("^%s*(.-)%s*$")) -- Trim whitespace
+  end
+end
 -- Define allowed directories for file operations
 local env_allowed_dirs = os.getenv("NVIM_SECURITY_ALLOWED_DIRS")
 if env_allowed_dirs then
