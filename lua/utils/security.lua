@@ -23,15 +23,37 @@ if env_allowed_commands then
   -- Split the environment variable value into a table
   M.allowed_commands = {}
   for command in env_allowed_commands:gmatch("[^,]+") do
-    table.insert(M.allowed_commands, command:match("^%s*(.-)%s*$")) -- Trim whitespace
+    local trimmed_command = command:match("^%s*(.-)%s*$") -- Trim whitespace
+    if trimmed_command and trimmed_command ~= "" then
+      table.insert(M.allowed_commands, trimmed_command)
+    end
+  end
+  -- Ensure we didn't end up with empty allowed commands
+  if #M.allowed_commands == 0 then
+    vim.notify("WARNING: NVIM_SECURITY_ALLOWED_COMMANDS parsed to empty list, using defaults", vim.log.levels.WARN)
+    M.allowed_commands = {"git", "nvim", "npm", "node", "python", "python3"}
   end
 end
+
 -- Define allowed directories for file operations
 local env_allowed_dirs = os.getenv("NVIM_SECURITY_ALLOWED_DIRS")
 if env_allowed_dirs then
   M.allowed_directories = {}
   for dir in env_allowed_dirs:gmatch("([^:]+)") do
-    table.insert(M.allowed_directories, dir)
+    local trimmed_dir = dir:match("^%s*(.-)%s*$") -- Trim whitespace
+    if trimmed_dir and trimmed_dir ~= "" then
+      table.insert(M.allowed_directories, trimmed_dir)
+    end
+  end
+  -- Ensure we didn't end up with empty allowed directories
+  if #M.allowed_directories == 0 then
+    vim.notify("WARNING: NVIM_SECURITY_ALLOWED_DIRS parsed to empty list, using defaults", vim.log.levels.WARN)
+    M.allowed_directories = {
+      paths.NVIM.CONFIG,
+      paths.NVIM.DATA,
+      paths.NVIM.STATE,
+      paths.NVIM.CACHE
+    }
   end
 else
   M.allowed_directories = {
@@ -46,11 +68,19 @@ end
 -- @param filepath Path to the file
 -- @return boolean True if file might contain sensitive data
 function M.might_contain_sensitive_data(filepath)
-  local f = io.open(filepath, "r")
-  if not f then return false end
+  local f, err = io.open(filepath, "r")
+  if not f then
+    vim.notify("Could not check file for sensitive data: " .. (err or "unknown error"), vim.log.levels.WARN)
+    return false
+  end
   
-  local content = f:read("*all")
+  local content, read_err = f:read("*all")
   f:close()
+  
+  if not content then
+    vim.notify("Could not read file content: " .. (read_err or "unknown error"), vim.log.levels.WARN)
+    return false
+  end
   
   for _, pattern in ipairs(M.sensitive_patterns) do
     if content:lower():match(pattern) then
@@ -94,14 +124,23 @@ function M.safe_write(filepath, content, force)
   end
   
   -- Write the file
-  local f = io.open(filepath, "w")
-  if not f then 
+  local f, err = io.open(filepath, "w")
+  if not f then
     vim.notify("Failed to open file for writing: " .. filepath, vim.log.levels.ERROR)
+    if err then
+      vim.notify("Error: " .. err, vim.log.levels.ERROR)
+    end
     return false 
   end
   
-  f:write(content)
+  local success, write_err = pcall(function() f:write(content) end)
   f:close()
+  
+  if not success then
+    vim.notify("Failed to write to file: " .. (write_err or "unknown error"), vim.log.levels.ERROR)
+    return false
+  end
+  
   return true
 end
 
@@ -136,13 +175,18 @@ function M.safe_read(filepath, force)
     end
   end
   
-  local f = io.open(filepath, "r")
+  local f, err = io.open(filepath, "r")
   if not f then
-    return nil, "Failed to open file: " .. filepath
+    return nil, "Failed to open file: " .. filepath .. (err and (": " .. err) or "")
   end
   
-  local content = f:read("*all")
+  local content, read_err = f:read("*all")
   f:close()
+  
+  if not content then
+    return nil, "Failed to read file content: " .. (read_err or "unknown error")
+  end
+  
   return content
 end
 
@@ -161,6 +205,13 @@ function M.safe_execute(cmd, force)
       allowed = true
       break
     end
+  end
+  
+  -- Additional check for shell metacharacters in arguments
+  local has_shell_metacharacters = cmd:match("[;&|<>$`\\!]")
+  if has_shell_metacharacters then
+    vim.notify("WARNING: Command contains shell metacharacters: " .. cmd, vim.log.levels.WARN)
+    allowed = false
   end
   
   if not allowed and not force then
@@ -215,7 +266,9 @@ function M.redact_personal_info(content)
   
   for _, hostname in ipairs(hostnames) do
     if hostname and hostname ~= "" then
-      content = content:gsub(hostname, "<HOSTNAME>")
+      -- Escape pattern special characters
+      local escaped_hostname = hostname:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+      content = content:gsub(escaped_hostname, "<HOSTNAME>")
     end
   end
   
