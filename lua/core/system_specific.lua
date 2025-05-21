@@ -39,8 +39,8 @@ M.is_linux = M.os_type == "Linux"
 M.is_mac = M.os_type == "Darwin"
 
 -- Known machine hostnames (from environment variables if available)
-M.MAIN_LAPTOP = (env_ok and env.get("NVIM_MAIN_LAPTOP")) or "DESKTOP-V2L884C"  -- Main laptop with devdrive
-M.STATIONARY = (env_ok and env.get("NVIM_STATIONARY")) or "DESKTOP-19QVLUP"   -- Stationary desktop
+M.MAIN_LAPTOP = (env_ok and env.get("NVIM_MAIN_LAPTOP")) -- Main laptop with devdrive
+M.STATIONARY = (env_ok and env.get("NVIM_STATIONARY")) -- Stationary desktop
 
 -- Machine type detection based on known hostnames
 M.is_desktop = M.hostname == M.STATIONARY
@@ -74,26 +74,32 @@ function M.apply_system_settings()
   end
 
   -- Machine-specific settings
+  local machine_type
   if M.is_main_laptop then
     logger.info("Applying settings for main laptop (" .. M.MAIN_LAPTOP .. ")")
     -- Main laptop specific settings
-    
+    machine_type = "main_laptop"
+
     if M.has_devdrive then
       logger.info("Configuring devdrive settings")
       -- Settings specific to devdrive on main laptop
       -- Example: Configure project paths or dev tools specific to devdrive
     end
   elseif M.is_stationary then
+    machine_type = "stationary"
     logger.info("Applying settings for stationary computer (" .. M.STATIONARY .. ")")
+
     -- Stationary computer specific settings
     -- Example: Configure for larger screen or different performance profile
   else
+    machine_type = M.hostname:lower():gsub("%-", "_")
+
     logger.info("Applying generic settings for unknown computer")
     -- Generic settings for unknown machines
   end
 
   -- Try to load machine-specific module if it exists
-  local host_specific_module = "conf.machines." .. M.hostname:lower():gsub("%-", "_")
+  local host_specific_module = "conf.machines." .. machine_type
   local success, host_module = pcall(require, host_specific_module)
   if success then
     logger.info("Loading machine-specific module: " .. host_specific_module)
