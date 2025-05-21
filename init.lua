@@ -2,10 +2,27 @@
 -- single‑source paths + cleaner separator‑agnostic joins
 
 local paths = require('utils.paths')
-local logger = require('utils.logger') -- Added logger
+local logger = require('utils.logger')
 local fn    = vim.fn
 
 logger.set_level('ERROR')  -- <-
+
+-- Load environment variables as early as possible
+local env_ok, env = pcall(require, 'utils.env')
+if env_ok then
+  env.load_env()
+  logger.debug("Environment variables loaded from .env file")
+else
+  logger.debug("utils.env module not available yet, .env will be loaded later")
+end
+
+-- Load security utilities if available
+local security_ok, security = pcall(require, 'utils.security')
+if security_ok then
+  logger.debug("Security utilities loaded")
+else
+  logger.debug("utils.security module not available yet, will be loaded later")
+end
 
 --- windows quirk helpers ------------------------------------------------------
 local is_windows = fn.has('win32') == 1
@@ -28,12 +45,25 @@ local function ensure_packer()
   -- clone only if the directory is absent / empty
   if fn.empty(fn.glob(install_path)) > 0 then
     paths.ensure_dir(start_dir)                           -- mkdir -p …/start
-    logger.info("Packer not found. Cloning packer.nvim...") -- Added logger.info
-    fn.system({
+    logger.info("Packer not found. Cloning packer.nvim...")
+    
+    -- Use security.safe_execute if available, otherwise use fn.system
+    local clone_cmd = {
       'git', 'clone', '--depth', '1',
       'https://github.com/wbthomason/packer.nvim',
       install_path,
-    })
+    }
+    
+    if security_ok then
+      local result, success = security.safe_execute("git clone --depth 1 https://github.com/wbthomason/packer.nvim " .. install_path, true)
+      if not success then
+        logger.error("Failed to clone packer.nvim: " .. tostring(result))
+        return false
+      end
+    else
+      fn.system(clone_cmd)
+    end
+    
     return true                                           -- freshly installed
   end
 
@@ -46,7 +76,7 @@ if packer_boot then -- Packer was freshly installed
   vim.cmd('packadd packer.nvim') -- Make packer.nvim available to the current session
   local packer_ok, packer_module = pcall(require, 'packer')
   if not packer_ok then
-    logger.error('Critical: packer.nvim installed but failed to require. Error: ' .. tostring(packer_module)) -- Changed to logger.error
+    logger.error('Critical: packer.nvim installed but failed to require. Error: ' .. tostring(packer_module))
     vim.notify('Critical: packer.nvim installed but failed to require. Error: ' .. tostring(packer_module), vim.log.levels.ERROR)
     return -- Can't continue without packer
   end
@@ -54,7 +84,7 @@ if packer_boot then -- Packer was freshly installed
   packer_module.startup(function(use)
     use 'wbthomason/packer.nvim'
   end)
-  logger.warn('packer.nvim installed. Please RESTART Neovim and then run :PackerSync') -- Changed to logger.warn
+  logger.warn('packer.nvim installed. Please RESTART Neovim and then run :PackerSync')
   vim.notify('packer.nvim installed. Please RESTART Neovim and then run :PackerSync', vim.log.levels.WARN)
   return
 end
@@ -74,38 +104,27 @@ if profiling then
     callback = function()
       local dur = vim.fn.reltimefloat(vim.fn.reltime())
       local msg = string.format('startup: %.3fs', dur)
-      logger.info(msg) -- Changed to logger.info
+      logger.info(msg)
       local f = io.open(file, 'a'); if f then f:write('\n' .. msg .. '\n'); f:close() end
     end,
   })
-  logger.info("profiling done") -- Changed to logger.info
-end
-
---- Fix deprecation warnings -------------------------------------------------
--- Apply patches for Neovim deprecation warnings
-local deprecation_ok, packer_update = pcall(require, 'plugins.packer_update')
-if deprecation_ok then
-  -- Apply patches
-  packer_update.apply_all_patches()
-  logger.info("Applied deprecation warning fixes")
-else
-  logger.debug("Deprecation warning fixes not loaded: " .. tostring(packer_update))
+  logger.info("profiling done")
 end
 
 --- lazy‑load core config -------------------------------------------------------
 if not packer_boot then
-  logger.info("init.lua: Running core and plugin loading") -- Changed to logger.info (and simplified message)
+  logger.info("init.lua: Running core and plugin loading")
   local ok_sys, sys = pcall(require, 'core.system_specific')
   if ok_sys then
     sys.apply_system_settings()
   else
-    logger.error("Error loading core.system_specific: " .. tostring(sys)) -- Changed to logger.error
+    logger.error("Error loading core.system_specific: " .. tostring(sys))
     vim.notify("Error loading core.system_specific: " .. tostring(sys), vim.log.levels.ERROR)
   end
 
   local core_ok, core_module = pcall(require, 'core')
   if not core_ok then
-    logger.error("Error loading core: " .. tostring(core_module)) -- Changed to logger.error
+    logger.error("Error loading core: " .. tostring(core_module))
     vim.notify("Error loading core: " .. tostring(core_module), vim.log.levels.ERROR)
     return -- Can't proceed without core typically
   end
@@ -115,14 +134,21 @@ if not packer_boot then
   local packer_lua_path = packer_install_path .. '/lua/?.lua'
   local packer_lua_init_path = packer_install_path .. '/lua/?/init.lua'
   package.path = package.path .. ';' .. packer_lua_path .. ';' .. packer_lua_init_path
-  logger.debug("init.lua: Manually updated package.path for packer: " .. package.path) -- Changed to logger.debug
+  logger.debug("init.lua: Manually updated package.path for packer: " .. package.path)
 
   local plugins_ok, plug_err = pcall(require, 'plugins')
   if not plugins_ok then
-    logger.error('init.lua: failed to load plugins: ' .. tostring(plug_err)) -- Changed to logger.error
+    logger.error('init.lua: failed to load plugins: ' .. tostring(plug_err))
     vim.notify('init.lua: failed to load plugins: ' .. tostring(plug_err), vim.log.levels.ERROR)
   else
-    logger.info("init.lua: plugins loaded successfully") -- Changed to logger.info
+    logger.info("init.lua: plugins loaded successfully")
+  end
+  
+  -- Initialize security checks if available (after plugins loaded)
+  local dependency_notifier_ok, dependency_notifier = pcall(require, 'utils.dependency_notifier')
+  if dependency_notifier_ok then
+    dependency_notifier.notify_dependency_issues()
+    logger.info("Dependency check complete")
   end
 end
 
@@ -132,8 +158,21 @@ local function handle_args()
     if arg == '-i' and vim.v.argv[i+1] then
       local file  = fn.fnamemodify(vim.v.argv[i+1], ':p')
       local dir   = fn.fnamemodify(file, ':h')
+      
+      -- Use security utils if available to check if this path is allowed
+      if security_ok and not security.is_path_allowed(dir) and not security.is_path_allowed(file) then
+        vim.notify("Security warning: Attempting to create file outside allowed directories: " .. file, vim.log.levels.WARN)
+        local confirm = vim.fn.input("Continue anyway? (y/N): ")
+        if confirm:lower() ~= "y" then
+          return
+        end
+      end
+      
       paths.ensure_dir(dir)
-      if fn.filereadable(file) == 0 then io.open(file, 'w'):close() end
+      if fn.filereadable(file) == 0 then 
+        local f = io.open(file, 'w')
+        if f then f:close() end
+      end
       vim.schedule(function() vim.cmd('quit') end)
     end
   end
@@ -150,14 +189,30 @@ local function setup_lsp()
   if ok_cmp then caps = cmp.default_capabilities(caps) end
 
   local mason_bin = paths.join(paths.data_dir, 'mason', 'bin')
+  
+  -- Get LSP paths from environment variables if available
+  local lsp_paths = {}
+  if env_ok then
+    lsp_paths = {
+      pyright = env.get("NVIM_LSP_PYRIGHT_PATH"),
+      lua_ls = env.get("NVIM_LSP_LUA_LS_PATH"),
+      ts_ls = env.get("NVIM_LSP_TS_LS_PATH"),
+      html = env.get("NVIM_LSP_HTML_PATH"),
+      cssls = env.get("NVIM_LSP_CSSLS_PATH"),
+      jsonls = env.get("NVIM_LSP_JSONLS_PATH"),
+      rust_analyzer = env.get("NVIM_LSP_RUST_ANALYZER_PATH"),
+    }
+  end
+  
+  -- Default servers with environment variable override
   local servers = {
-    pyright        = exe('pyright-langserver'),
-    lua_ls         = exe('lua-language-server'),
-    ts_ls          = exe('typescript-language-server'),
-    html           = exe('vscode-html-language-server'),
-    cssls          = exe('vscode-css-language-server'),
-    jsonls         = exe('vscode-json-language-server'),
-    rust_analyzer  = exe('rust-analyzer'),
+    pyright        = lsp_paths.pyright or exe('pyright-langserver'),
+    lua_ls         = lsp_paths.lua_ls or exe('lua-language-server'),
+    ts_ls          = lsp_paths.ts_ls or exe('typescript-language-server'),
+    html           = lsp_paths.html or exe('vscode-html-language-server'),
+    cssls          = lsp_paths.cssls or exe('vscode-css-language-server'),
+    jsonls         = lsp_paths.jsonls or exe('vscode-json-language-server'),
+    rust_analyzer  = lsp_paths.rust_analyzer or exe('rust-analyzer'),
   }
 
   local function on_attach(client, bufnr)
@@ -170,25 +225,12 @@ local function setup_lsp()
   for name, bin in pairs(servers) do
     local cmd = paths.join(mason_bin, bin)
     if fn.filereadable(cmd) == 1 then
-      -- Define a common root_dir pattern to use in both branches
-      local root_dir = lspconfig.util.root_pattern(".git", "*.sln", "pyproject.toml", "package.json")
-      
-      -- Use vim.lsp.start if available (Neovim 0.8+)
-      -- Define common LSP setup configuration
-      local lsp_config = {
+      lspconfig[name].setup {
         cmd  = {cmd, '--stdio'},
         on_attach = on_attach,
         capabilities = caps,
         flags = {debounce_text_changes = 150},
-        root_dir = root_dir, -- Use consistent root_dir
       }
-
-      if vim.lsp.start then
-        lspconfig[name].setup(lsp_config)
-      else
-        -- Fall back to deprecated method for older Neovim
-        lspconfig[name].setup(lsp_config)
-      end
     end
   end
 end
@@ -216,12 +258,12 @@ vim.lsp.set_log_level('ERROR')
 _G.LspLog = function() vim.cmd('vsplit ' .. vim.lsp.get_log_path()) end
 _G.LspInfo = function()
   for _, c in ipairs(vim.lsp.get_clients()) do
-    logger.debug(string.format('• %s (%d) %s', c.name, c.id, table.concat(c.config.cmd, ' '))) -- Changed to logger.debug
+    logger.debug(string.format('• %s (%d) %s', c.name, c.id, table.concat(c.config.cmd, ' ')))
   end
 end
 _G.LspDebugPath = function()
   local mason_bin = paths.join(paths.data_dir, 'mason', 'bin')
-  for _, f in ipairs(fn.glob(paths.join(mason_bin, '*'), 0, 1)) do logger.debug('  - ' .. f) end -- Changed to logger.debug
+  for _, f in ipairs(fn.glob(paths.join(mason_bin, '*'), 0, 1)) do logger.debug('  - ' .. f) end
 end
 
 

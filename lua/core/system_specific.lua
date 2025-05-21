@@ -1,12 +1,21 @@
 local M = {}
-local logger = require('utils.logger') -- Added logger
+local logger = require('utils.logger')
+
+-- Load environment variables from .env file if available
+local env_ok, env = pcall(require, 'utils.env')
+if env_ok then
+  env.load_env() -- Load .env file from config directory
+  logger.debug("Environment variables loaded")
+else
+  logger.debug("utils.env module not available, skipping .env loading")
+end
 
 -- Environment override for testing (set before requiring this module)
 -- Example usage: vim.g.system_override = { hostname = "DESKTOP-19QVLUP" }
 local override = vim.g.system_override or {}
 
 -- Get hostname with override support for testing
-M.hostname = override.hostname or vim.fn.hostname()
+M.hostname = override.hostname or (env_ok and env.get("NVIM_HOSTNAME")) or vim.fn.hostname()
 
 -- Get OS type with override support for testing
 local uname = vim.loop.os_uname()
@@ -29,9 +38,9 @@ M.is_windows = M.os_type == "Windows_NT"
 M.is_linux = M.os_type == "Linux"
 M.is_mac = M.os_type == "Darwin"
 
--- Known machine hostnames
-M.MAIN_LAPTOP = "DESKTOP-V2L884C"  -- Main laptop with devdrive
-M.STATIONARY = "DESKTOP-19QVLUP"   -- Stationary desktop
+-- Known machine hostnames (from environment variables if available)
+M.MAIN_LAPTOP = (env_ok and env.get("NVIM_MAIN_LAPTOP")) or "DESKTOP-V2L884C"  -- Main laptop with devdrive
+M.STATIONARY = (env_ok and env.get("NVIM_STATIONARY")) or "DESKTOP-19QVLUP"   -- Stationary desktop
 
 -- Machine type detection based on known hostnames
 M.is_desktop = M.hostname == M.STATIONARY
@@ -66,7 +75,7 @@ function M.apply_system_settings()
 
   -- Machine-specific settings
   if M.is_main_laptop then
-    logger.info("Applying settings for main laptop (DESKTOP-V2L884C)")
+    logger.info("Applying settings for main laptop (" .. M.MAIN_LAPTOP .. ")")
     -- Main laptop specific settings
     
     if M.has_devdrive then
@@ -75,7 +84,7 @@ function M.apply_system_settings()
       -- Example: Configure project paths or dev tools specific to devdrive
     end
   elseif M.is_stationary then
-    logger.info("Applying settings for stationary computer (DESKTOP-19QVLUP)")
+    logger.info("Applying settings for stationary computer (" .. M.STATIONARY .. ")")
     -- Stationary computer specific settings
     -- Example: Configure for larger screen or different performance profile
   else
