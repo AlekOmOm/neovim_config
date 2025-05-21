@@ -4,6 +4,8 @@
 local function setup_copilot_indentation()
   -- Detect indentation settings from the current buffer
   local indent_size = vim.bo.tabstop
+  -- Ensure indent_size is within reasonable bounds
+  indent_size = math.max(1, math.min(8, indent_size))
   local use_spaces = vim.bo.expandtab
   
   -- Update Copilot's indentation settings
