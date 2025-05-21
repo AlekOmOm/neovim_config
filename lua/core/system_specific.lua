@@ -50,7 +50,9 @@ M.is_stationary = M.hostname == M.STATIONARY
 M.has_devdrive = M.hostname == M.MAIN_LAPTOP -- Only the main laptop has devdrive
 
 --- Applies system-specific settings.
--- This function will be expanded to load configurations based on hostname or OS.
+---Applies system and machine-specific configuration settings based on the detected environment.
+---@desc
+---Determines the current operating system and machine type, then applies relevant configuration settings. Attempts to load and execute a machine-specific configuration module if available. This function is intended to be called during initialization to ensure the environment is correctly configured for the detected system.
 function M.apply_system_settings()
   logger.info("Applying system-specific settings for: " .. M.hostname .. " (" .. M.os_type .. ")")
   logger.debug("Is Desktop: " .. tostring(M.is_desktop))
@@ -111,7 +113,10 @@ function M.apply_system_settings()
   end
 end
 
--- Test function to simulate different environments
+---Simulates a different system environment for testing configuration logic.
+---@param hostname string? Optional hostname to simulate; defaults to the current hostname if not provided.
+---@param os_type string? Optional operating system type to simulate; defaults to the current OS type if not provided.
+---@return table A module-like table representing the simulated environment, with all derived properties recalculated.
 function M.test_environment(hostname, os_type)
   logger.info("\n--- Testing with simulated environment ---")
   logger.debug("Original hostname: " .. M.hostname)
