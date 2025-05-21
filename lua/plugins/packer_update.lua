@@ -22,10 +22,7 @@ function M.patch_tbl_islist()
   if vim.islist then
     -- Only patch if vim.tbl_islist still exists
     if vim.tbl_islist then
-      -- Store original function as backup
-      local original_tbl_islist = vim.tbl_islist
-      
-      -- Override with vim.islist
+      -- Override with vim.islist (no need to store original)
       vim.tbl_islist = function(t)
         return vim.islist(t)
       end
