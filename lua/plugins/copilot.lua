@@ -38,5 +38,3 @@ vim.api.nvim_create_user_command('CopilotToggle', function()
     print("Copilot enabled")
   end
 end, {})
-
--- Note: Indentation settings are handled in after/plugin/copilot.lua
