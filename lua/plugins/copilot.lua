@@ -39,7 +39,12 @@ vim.api.nvim_create_user_command('CopilotToggle', function()
   end
 end, {})
 
+-- :cmds-coplit should show key mappings for Copilot commands
 
+vim.api.nvim_create_user_command('CopilotCommands', function()
+  print("Copilot Commands:")
+
+end, {})
 
 
 

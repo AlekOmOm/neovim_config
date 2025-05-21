@@ -85,7 +85,7 @@ end
 -- Show the LSP log with proper formatting
 function M.show_lsp_log()
     local log_path = vim.lsp.get_log_path()
-    vim.message("Opening LSP log: " .. log_path, "info")
+    vim.notify("Opening LSP log: " .. log_path, vim.log.levels.INFO)
     vim.cmd('split ' .. log_path)
     vim.cmd('setlocal filetype=log')
 end
