@@ -150,10 +150,32 @@ end
 function M.is_path_allowed(path)
   local norm_path = vim.fn.fnamemodify(path, ":p")
   
+  -- Try to get real path if the filesystem supports it
+  local real_path = norm_path
+  pcall(function()
+    if vim.loop.fs_realpath then
+      real_path = vim.loop.fs_realpath(norm_path) or norm_path
+    end
+  end)
+  
   for _, dir in ipairs(M.allowed_directories) do
     local norm_dir = vim.fn.fnamemodify(dir, ":p")
-    if norm_path:sub(1, #norm_dir) == norm_dir then
-      return true
+    
+    -- Try to get real path for the directory too
+    local real_dir = norm_dir
+    pcall(function()
+      if vim.loop.fs_realpath then
+        real_dir = vim.loop.fs_realpath(norm_dir) or norm_dir
+      end
+    end)
+    
+    -- Check if path has the allowed directory as prefix
+    if real_path:sub(1, #real_dir) == real_dir then
+      -- Extra check to prevent prefix attacks
+      local next_char = real_path:sub(#real_dir + 1, #real_dir + 1)
+      if next_char == '/' or next_char == '\\' or next_char == '' then
+        return true
+      end
     end
   end
   
@@ -222,14 +244,46 @@ function M.safe_execute(cmd, force)
     end
   end
   
-  -- Execute the command
-  local handle = io.popen(cmd)
-  if not handle then return nil, "Failed to execute command" end
-  
-  local result = handle:read("*a")
-  local success = handle:close()
-  
-  return result, success
+  -- Try to use plenary.job if available to avoid shell injection risks
+  local has_plenary = pcall(require, 'plenary.job')
+  if has_plenary then
+    local Job = require('plenary.job')
+    local args = {}
+    -- Parse command into arguments
+    for arg in cmd:gmatch("%S+") do
+      if #args == 0 then
+        -- First argument is the command itself, save it
+        table.insert(args, arg)
+      else
+        -- Subsequent arguments
+        table.insert(args, arg)
+      end
+    end
+    
+    local command = args[1]
+    table.remove(args, 1) -- Remove command from args list
+    
+    local result = {}
+    local code
+    Job:new({
+      command = command,
+      args = args,
+      on_stdout = function(_, data) table.insert(result, data) end,
+      on_exit = function(_, exit_code) code = exit_code end,
+    }):sync()
+    
+    return table.concat(result, '\n'), code == 0
+  else
+    -- Fallback to io.popen, but with warnings
+    vim.notify("WARNING: Using less secure io.popen for command execution - plenary.nvim not available", vim.log.levels.WARN)
+    local handle = io.popen(cmd)
+    if not handle then return nil, "Failed to execute command" end
+    
+    local result = handle:read("*a")
+    local success = handle:close()
+    
+    return result, success
+  end
 end
 
 -- Redact personal information from outputs
