@@ -81,7 +81,7 @@ if profiling then
   logger.info("profiling done") -- Changed to logger.info
 end
 
---- Fix deprecation warnings ---------------------------------------------------
+--- Fix deprecation warnings -------------------------------------------------
 -- Apply patches for Neovim deprecation warnings
 local deprecation_ok, packer_update = pcall(require, 'plugins.packer_update')
 if deprecation_ok then
@@ -170,6 +170,9 @@ local function setup_lsp()
   for name, bin in pairs(servers) do
     local cmd = paths.join(mason_bin, bin)
     if fn.filereadable(cmd) == 1 then
+      -- Define a common root_dir pattern to use in both branches
+      local root_dir = lspconfig.util.root_pattern(".git", "*.sln", "pyproject.toml", "package.json")
+      
       -- Use vim.lsp.start if available (Neovim 0.8+)
       if vim.lsp.start then
         lspconfig[name].setup {
@@ -177,7 +180,7 @@ local function setup_lsp()
           on_attach = on_attach,
           capabilities = caps,
           flags = {debounce_text_changes = 150},
-          root_dir = lspconfig.util.root_pattern(".git", "*.sln", "pyproject.toml", "package.json"),
+          root_dir = root_dir, -- Use consistent root_dir
         }
       else
         -- Fall back to deprecated method for older Neovim
@@ -186,6 +189,7 @@ local function setup_lsp()
           on_attach = on_attach,
           capabilities = caps,
           flags = {debounce_text_changes = 150},
+          root_dir = root_dir, -- Same pattern for consistency
         }
       end
     end
