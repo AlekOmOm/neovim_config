@@ -26,8 +26,6 @@ function M.patch_tbl_islist()
       vim.tbl_islist = function(t)
         return vim.islist(t)
       end
-      
-      vim.notify("Patched vim.tbl_islist to use vim.islist", vim.log.levels.INFO)
     end
   end
 end
