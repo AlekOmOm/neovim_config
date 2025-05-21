@@ -71,6 +71,46 @@ The configuration includes a system for applying different settings based on the
    vim.g.system_override = { hostname = "DESKTOP-19QVLUP" }
    ```
 
+## Security Features
+
+This configuration includes several security features to protect sensitive information and enhance overall security:
+
+1. **Environment Variables**: Configuration details are stored in a `.env` file rather than hardcoded in the config:
+   - Machine-specific paths
+   - Hostnames and identifiers
+   - Font sizes and UI preferences 
+   - LSP paths and settings
+
+2. **Secure File Handling**:
+   - Validation of file operations against allowed paths
+   - Detection of sensitive information in files
+   - Confirmations for operations outside allowed directories
+
+3. **Command Execution Protection**:
+   - Validation of external commands against an allowlist
+   - Configurable controls for command execution
+   - Error handling for potentially unsafe operations
+
+4. **Privacy Protection**:
+   - Automatic redaction of personal information from logs and outputs
+   - Sanitization of hostnames, usernames, and paths containing personal data
+
+### Setting Up Security Features
+
+1. **Create a Local .env File**:
+   - Copy `.env.example` to `.env` in your Neovim config directory
+   - Customize settings for your system, keeping sensitive information out of the repository
+
+2. **Configuration Options**: Several environment variables control security behavior:
+   - `NVIM_SECURITY_ALLOWED_COMMANDS`: Comma-separated list of allowed commands
+   - `NVIM_SECURITY_ALLOWED_DIRS`: Additional allowed directories 
+   - `NVIM_SECURITY_DISABLE_CONFIRMATIONS`: Set to "true" to disable safety confirmations
+
+3. **Implementation Details**:
+   - Security utilities are in `lua/utils/security.lua`
+   - Environment variable handling is in `lua/utils/env.lua`
+   - Machine-specific configs use environment variables for sensitive information
+
 ## External Dependencies
 
 This Neovim configuration relies on several external tools and programs to provide its full range of features, including LSP servers, linters, formatters, and plugin-specific functionality.
@@ -114,4 +154,14 @@ If you encounter path-related issues:
    ```lua
    :lua print(require('utils.paths').path_sep)
    :lua print(require('utils.paths').join(vim.fn.stdpath('config'), 'plugin'))
-   ``` 
+   ```
+
+5. **Check Environment Variables**: Verify that environment variables are being loaded:
+   ```lua
+   :lua print(vim.inspect(vim.env.NVIM_HOSTNAME or "Not set"))
+   ```
+
+6. **Security Warnings**: If you encounter security warnings, you can:
+   - Add allowed paths to your `.env` file
+   - Add allowed commands to the `NVIM_SECURITY_ALLOWED_COMMANDS` environment variable
+   - Set `NVIM_SECURITY_DISABLE_CONFIRMATIONS=true` for testing (not recommended for normal use)
