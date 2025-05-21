@@ -17,12 +17,20 @@ M.allowed_commands = {
 }
 
 -- Define allowed directories for file operations
-M.allowed_directories = {
-  paths.NVIM.CONFIG,
-  paths.NVIM.DATA,
-  paths.NVIM.STATE,
-  paths.NVIM.CACHE
-}
+local env_allowed_dirs = os.getenv("NVIM_SECURITY_ALLOWED_DIRS")
+if env_allowed_dirs then
+  M.allowed_directories = {}
+  for dir in env_allowed_dirs:gmatch("([^:]+)") do
+    table.insert(M.allowed_directories, dir)
+  end
+else
+  M.allowed_directories = {
+    paths.NVIM.CONFIG,
+    paths.NVIM.DATA,
+    paths.NVIM.STATE,
+    paths.NVIM.CACHE
+  }
+end
 
 -- Check if a file might contain sensitive information
 -- @param filepath Path to the file
