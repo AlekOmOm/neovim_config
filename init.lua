@@ -81,6 +81,17 @@ if profiling then
   logger.info("profiling done") -- Changed to logger.info
 end
 
+--- Fix deprecation warnings -------------------------------------------------
+-- Apply patches for Neovim deprecation warnings
+local deprecation_ok, packer_update = pcall(require, 'plugins.packer_update')
+if deprecation_ok then
+  -- Apply patches
+  packer_update.apply_all_patches()
+  logger.info("Applied deprecation warning fixes")
+else
+  logger.debug("Deprecation warning fixes not loaded: " .. tostring(packer_update))
+end
+
 --- lazy‑load core config -------------------------------------------------------
 if not packer_boot then
   logger.info("init.lua: Running core and plugin loading") -- Changed to logger.info (and simplified message)
@@ -159,12 +170,25 @@ local function setup_lsp()
   for name, bin in pairs(servers) do
     local cmd = paths.join(mason_bin, bin)
     if fn.filereadable(cmd) == 1 then
-      lspconfig[name].setup {
+      -- Define a common root_dir pattern to use in both branches
+      local root_dir = lspconfig.util.root_pattern(".git", "*.sln", "pyproject.toml", "package.json")
+      
+      -- Use vim.lsp.start if available (Neovim 0.8+)
+      -- Define common LSP setup configuration
+      local lsp_config = {
         cmd  = {cmd, '--stdio'},
         on_attach = on_attach,
         capabilities = caps,
         flags = {debounce_text_changes = 150},
+        root_dir = root_dir, -- Use consistent root_dir
       }
+
+      if vim.lsp.start then
+        lspconfig[name].setup(lsp_config)
+      else
+        -- Fall back to deprecated method for older Neovim
+        lspconfig[name].setup(lsp_config)
+      end
     end
   end
 end
@@ -216,7 +240,6 @@ _G.CheckMasonInstall = function()
   end
 end
 
--- shada cleanup of tmp files ------------------------------------------------
 -- shada cleanup of tmp files ------------------------------------------------
 vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
