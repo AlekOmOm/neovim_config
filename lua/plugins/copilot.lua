@@ -7,10 +7,6 @@ vim.g.copilot_no_tab_map = true          -- Disable default tab mapping
 vim.g.copilot_assume_mapped = true       -- Tell Copilot we have custom mappings
 vim.g.copilot_tab_fallback = ""          -- What to do when tab is pressed and Copilot has no suggestion
 
--- Add indentation settings
-vim.g.copilot_indent_mode = 'current'    -- Use the current file's indentation
-vim.g.copilot_tab_spaces = vim.opt.tabstop:get() -- Match Neovim's tab settings
-
 -- Suggestion display settings
 vim.g.copilot_filetypes = {              -- Enable/disable for specific filetypes
   ["*"] = true,                          -- Enable for all filetypes by default
@@ -43,4 +39,4 @@ vim.api.nvim_create_user_command('CopilotToggle', function()
   end
 end, {})
 
--- Note: The more detailed indentation sync is in after/plugin/copilot.lua
+-- Note: Indentation settings are handled in after/plugin/copilot.lua
