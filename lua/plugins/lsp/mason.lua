@@ -15,7 +15,10 @@ function M.setup(opts)
   local ts_wrapper_ok, ts_wrapper = pcall(require, "plugins.lsp.ts_server_wrapper")
   local ts_server_opts = {}
   if ts_wrapper_ok then
-    ts_server_opts = ts_wrapper.setup()
+    -- Pass configuration to the wrapper with a specific max_listeners value
+    ts_server_opts = ts_wrapper.setup({
+      max_listeners = 15  -- Configurable value for EventEmitter max listeners
+    })
     logger.info("TypeScript server wrapper loaded for EventEmitter fix")
   else
     logger.warn("TypeScript server wrapper not found, EventEmitter warning may persist")
