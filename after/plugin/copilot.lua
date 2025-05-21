@@ -28,6 +28,7 @@ vim.api.nvim_create_autocmd({"BufEnter", "FileType"}, {
 
 -- Run when Copilot initializes
 vim.api.nvim_create_autocmd("User", {
+  group = "CopilotIndentation",
   pattern = "CopilotReady",
   callback = setup_copilot_indentation,
 })
