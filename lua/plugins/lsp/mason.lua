@@ -11,6 +11,16 @@ function M.setup(opts)
   ok, mason_lspconfig  = pcall(require, "mason-lspconfig"); if not ok then vim.notify("mason-lspconfig not found!", "error"); return end
   ok, lspconfig        = pcall(require, "lspconfig");       if not ok then vim.notify("lspconfig not found!", "error");       return end
 
+  -- Load the TypeScript server wrapper for EventEmitter fix
+  local ts_wrapper_ok, ts_wrapper = pcall(require, "plugins.lsp.ts_server_wrapper")
+  local ts_server_opts = {}
+  if ts_wrapper_ok then
+    ts_server_opts = ts_wrapper.setup()
+    logger.info("TypeScript server wrapper loaded for EventEmitter fix")
+  else
+    logger.warn("TypeScript server wrapper not found, EventEmitter warning may persist")
+  end
+
   -- mason core ---------------------------------------------------------------
   mason.setup({
     ui = {
@@ -71,11 +81,11 @@ function M.setup(opts)
       single_file_support = true,
     },
 
-    ts_ls = { -- typescript-language-server :contentReference[oaicite:0]{index=0}
+    ts_ls = vim.tbl_deep_extend("force", ts_server_opts, {
       settings = {
         -- put extra ts settings here if you need them
       },
-    },
+    }),
   }
 
   -- mason-lspconfig glue -----------------------------------------------------
@@ -103,10 +113,8 @@ function M.setup(opts)
 
   -- optional debug -----------------------------------------------------------
   vim.defer_fn(function()
-
      logger.info("mason initialised ➜ " .. paths.join(vim.fn.stdpath("data"), "mason"), "info")
   end, 1000)
 end
 
 return M
-
