@@ -4,6 +4,7 @@ This branch contains fixes for deprecation warnings in Neovim:
 
 1. `vim.lsp.start_client()` - Deprecated in favor of `vim.lsp.start()`
 2. `vim.tbl_islist` - Deprecated in favor of `vim.islist`
+3. `vim.validate` - Deprecated in favor of a different `vim.validate` with changed signature
 
 ## Changes
 
@@ -21,11 +22,13 @@ Added a utility module in `lua/plugins/packer_update.lua` that:
 - Creates a user command `:FixDeprecationWarnings` to update plugins
 - Detects Neovim version and displays appropriate warnings
 
-### 3. LSP Setup in `init.lua`
+### 3. `vim.validate` Deprecation Fix
 
-Updated the LSP setup function in `init.lua` to:
-- Use `vim.lsp.start` if available
-- Fall back to the old method for older Neovim versions
+This warning comes from the `nvim-notify` plugin. The solution is to update the plugin to the latest version using Packer:
+
+```
+:PackerUpdate rcarriga/nvim-notify
+```
 
 ## How to Use
 

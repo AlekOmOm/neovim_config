@@ -4,7 +4,7 @@
 
 local M = {}
 
--- Function to update Packer
+-- Function to update plugins
 function M.update_plugins()
   -- Notify start of update process
   vim.notify("Updating plugins to fix deprecation warnings...", vim.log.levels.INFO)
