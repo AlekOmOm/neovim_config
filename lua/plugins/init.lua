@@ -15,6 +15,7 @@ return packer.startup({
         use 'wbthomason/packer.nvim'
         -- use 'lewis6991/impatient.nvim'
         use 'github/copilot.vim'
+        use 'tpope/vim-surround'
 
 
         -- ### ---------------------------------------------------- ###
