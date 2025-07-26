@@ -136,6 +136,8 @@ if not packer_boot then
   package.path = package.path .. ';' .. packer_lua_path .. ';' .. packer_lua_init_path
   logger.debug("init.lua: Manually updated package.path for packer: " .. package.path)
 
+  _G.packer_bootstrap = packer_boot
+
   local plugins_ok, plug_err = pcall(require, 'plugins')
   if not plugins_ok then
     logger.error('init.lua: failed to load plugins: ' .. tostring(plug_err))
@@ -237,10 +239,10 @@ end
 setup_lsp()
 
 -- Load the compiled packer file if it exists
-local packer_compiled = vim.fn.stdpath('data') .. '/site/lua/packer_compiled.lua'
-if vim.fn.filereadable(packer_compiled) == 1 then
-  vim.cmd('luafile ' .. packer_compiled)
-end
+-- local packer_compiled = vim.fn.stdpath('data') .. '/site/lua/packer_compiled.lua'
+-- if vim.fn.filereadable(packer_compiled) == 1 then
+--   vim.cmd('luafile ' .. packer_compiled)
+-- end
 
 -- Add after setup_lsp() in init.lua
 vim.defer_fn(function()
